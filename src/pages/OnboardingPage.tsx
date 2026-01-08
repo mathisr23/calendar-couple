@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 
 export const OnboardingPage: React.FC = () => {
-    const { user, profile, refreshProfile } = useAuth();
+    const { user, profile, refreshProfile, signOut } = useAuth();
     const [step, setStep] = useState<'name' | 'couple'>('name');
     const [name, setName] = useState('');
     const [inviteCode, setInviteCode] = useState('');
@@ -37,8 +37,8 @@ export const OnboardingPage: React.FC = () => {
 
             console.log("Name updated successfully. Reloading...");
 
-            // Force reload to ensure fresh state
-            window.location.reload();
+            // Reload profile
+            await refreshProfile();
 
         } catch (err: any) {
             console.error("Update Name Error:", err);
@@ -81,8 +81,8 @@ export const OnboardingPage: React.FC = () => {
 
             console.log("Profile updated with couple_id. Reloading...");
 
-            // Success! Force reload
-            window.location.reload();
+            // Success! Reload profile
+            await refreshProfile();
 
         } catch (err: any) {
             console.error("Join Error:", err);
@@ -122,7 +122,8 @@ export const OnboardingPage: React.FC = () => {
             if (updateError) throw updateError;
 
             console.log("Profile updated with new couple_id. Reloading...");
-            window.location.reload();
+
+            await refreshProfile();
 
         } catch (err: any) {
             console.error("Create Error:", err);
@@ -306,8 +307,7 @@ export const OnboardingPage: React.FC = () => {
                 <button
                     className="logout-link"
                     onClick={async () => {
-                        await supabase.auth.signOut();
-                        window.location.reload();
+                        await signOut();
                     }}
                 >
                     Se déconnecter (ou recommencer)

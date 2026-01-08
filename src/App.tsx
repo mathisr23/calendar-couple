@@ -12,7 +12,7 @@ import { DateIdeas } from './components/DateIdeas';
 import { AddDateAction } from './components/AddDateAction';
 import { Addresses } from './components/Addresses';
 import { Activities } from './components/Activities';
-import type { PlannedDate, BucketIdea, Address, AddressCategory, ActivityIdea, User } from './types';
+import type { PlannedDate, BucketIdea, Address, AddressCategory, ActivityIdea } from './types';
 
 function AppContent() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -27,7 +27,6 @@ function AppContent() {
   const [bucketList, setBucketList] = useState<BucketIdea[]>([]);
   const [activities, setActivities] = useState<ActivityIdea[]>([]);
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loadingData, setLoadingData] = useState(false);
 
   // Couple Data
   const [partnerProfile, setPartnerProfile] = useState<{ full_name: string } | null>(null);
@@ -54,7 +53,6 @@ function AppContent() {
 
   const fetchCoupleData = async () => {
     if (!profile?.couple_id) return;
-    setLoadingData(true);
     try {
       // Parallel fetching
       const [datesRes, bucketRes, addressesRes, activitiesRes, profilesRes, coupleRes] = await Promise.all([
@@ -87,8 +85,6 @@ function AppContent() {
 
     } catch (e) {
       console.error(e);
-    } finally {
-      setLoadingData(false);
     }
   };
 
@@ -152,15 +148,7 @@ function AppContent() {
     await supabase.from('activities').delete().eq('id', id);
   };
 
-  const updateBucketList = async (id: string, completed: boolean) => {
-    setBucketList(bucketList.map(item => item.id === id ? { ...item, completed } : item));
-    await supabase.from('bucket_list_items').update({ completed }).eq('id', id);
-  }
 
-  const addBucketItem = async (text: string) => {
-    if (!profile?.couple_id) return;
-    // We need to implement this in DateIdeas if not existing
-  }
 
 
   // --- Render Logic ---
@@ -219,7 +207,7 @@ function AppContent() {
               />
               <DateIdeas
                 ideas={bucketList}
-                setIdeas={setBucketList} // This component expects a full setter, might need refactor or wrapper
+                setIdeas={setBucketList}
               />
               <div className="full-width-column">
                 <AddDateAction

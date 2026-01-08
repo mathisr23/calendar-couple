@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Utensils, Coffee, Star, Map, Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
+import { Utensils, Coffee, Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
 import type { Address, AddressCategory } from '../types';
 
 interface AddressesProps {
@@ -13,7 +13,7 @@ interface AddressesProps {
   userName: string;
 }
 
-export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, onAdd, onUpdate, onDelete, partnerName, userName }) => {
+export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate, onDelete, partnerName, userName }) => {
   const [activeCategory, setActiveCategory] = useState<AddressCategory>(() => {
     return (localStorage.getItem('activeAddressCategory') as any) || 'restaurants';
   });
@@ -66,7 +66,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
         <form className="add-place-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder={`Ajouter un(e) ${activeCategory === 'pastries' ? 'Pâtisserie' : activeCategory === 'restaurants' ? 'Restaurant' : activeCategory === 'events' ? 'Événement' : 'Voyage'}...`}
+            placeholder={`Ajouter un(e) ${categories.find(c => c.id === activeCategory)?.label.slice(0, -1)}...`}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
@@ -83,7 +83,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
                 animate={{ opacity: 1 }}
                 className="empty-msg"
               >
-                Aucun(e) {activeCategory === 'pastries' ? 'pâtisserie' : activeCategory === 'restaurants' ? 'restaurant' : activeCategory === 'events' ? 'événement' : 'voyage'} encore. Ajoutez-en un(e) !
+                Aucun(e) {categories.find(c => c.id === activeCategory)?.label.toLowerCase().slice(0, -1)} encore. Ajoutez-en un(e) !
               </motion.p>
             ) : (
               filteredAddresses.map((addr) => (
