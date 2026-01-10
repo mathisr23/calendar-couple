@@ -1,47 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=VT323&display=swap');
 
 :root {
-  /* THEME: Vibrant & Random */
-  --palette-green: #267F53;
-  --palette-orange: #F5793B;
-  --palette-pink: #E84797;
-  --palette-yellow: #FCCA59;
-  --palette-blue: #4A90E2;
+  /* RETRO PALETTE */
+  --retro-bg: #E0E7FF;
+  /* Light Periwinkle */
+  --retro-pink: #FF99C8;
+  --retro-purple: #D0D6FF;
+  --retro-blue: #A9DEF9;
+  --retro-green: #E4F988;
+  /* Acid Green / Yellow */
+  --retro-yellow: #FCF6BD;
+  --retro-orange: #FFBC42;
 
-  --color-primary-blue: var(--palette-blue);
-  /* Restoring blue to blue */
-  --color-primary-green: var(--palette-green);
-  --color-orange: var(--palette-orange);
-  --color-pink-soft: #FFC4D6;
-  --color-yellow: var(--palette-yellow);
-  --color-primary-pink: var(--palette-pink);
+  --retro-dark: #2B2B2B;
+  /* Instead of pure black */
+  --retro-border: 2px solid var(--retro-dark);
+  --retro-shadow: 4px 4px 0px var(--retro-dark);
+  --retro-shadow-hover: 6px 6px 0px var(--retro-dark);
+  --retro-shadow-active: 2px 2px 0px var(--retro-dark);
 
-  /* Pastels for backgrounds */
-  --color-pastel-blue: #D6E4FF;
-  --color-pastel-pink: #E7A0CC;
-  --color-pastel-green: #C4E9D3;
-  --color-pastel-orange: #FFE5D4;
-  --color-pastel-yellow: #FFF5D6;
-  --color-pastel-green: #267F53;
-  --color-beige: #fcf9d5;
-  /* Soft Orange/Peach */
-  /* Warm Cream */
-  --color-grey-blue: #9CA3AF;
-  /* Neutral Grey */
+  /* Fonts */
+  --font-main: 'Space Mono', monospace;
+  --font-display: 'VT323', monospace;
 
-  --bg-app: var(--color-beige);
-  --bg-card: #FFFFFF;
-  --bg-glass: rgba(255, 255, 255, 0.85);
-  --border-glass: rgba(242, 150, 189, 0.2);
-  /* Soft Pink Border */
+  /* Legacy variable mapping to keep app working */
+  --color-primary-blue: var(--retro-blue);
+  --color-primary-green: var(--retro-green);
+  --color-orange: var(--retro-orange);
+  --color-pink-soft: var(--retro-pink);
+  --color-yellow: var(--retro-yellow);
+  --color-primary-pink: #FF6B6B;
 
-  --text-main: #4A4A4A;
-  /* Warm Dark Grey */
-  --text-muted: #9CA3AF;
+  --bg-app: var(--retro-bg);
+  --text-main: var(--retro-dark);
+  --text-muted: #555555;
 
-  --font-family: 'Outfit', sans-serif;
-
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 * {
@@ -51,56 +45,135 @@
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: var(--font-main);
   background-color: var(--bg-app);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Retro background pattern */
+  background-image:
+    radial-gradient(var(--retro-purple) 15%, transparent 16%),
+    radial-gradient(var(--retro-purple) 15%, transparent 16%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
 }
 
-.glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 10px 40px rgba(32, 63, 154, 0.08);
-  border-radius: 20px;
-}
-
-.title-solid {
-  color: var(--color-primary-blue);
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-}
-
+/* Base Elements */
 button {
   cursor: pointer;
+  font-family: inherit;
   border: none;
   background: none;
-  font-family: inherit;
-  transition: var(--transition-smooth);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  /* VT323 is naturally bold-ish */
+  text-transform: uppercase;
 }
 
 input,
 textarea {
-  font-family: inherit;
-  background: #FFFFFF;
-  border: 1px solid var(--border-glass);
+  font-family: 'Space Mono', monospace;
+  background: #FFF;
+  border: var(--retro-border);
   color: var(--text-main);
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 0;
+  /* Brutalist */
   outline: none;
+  box-shadow: var(--retro-shadow);
   transition: var(--transition-smooth);
 }
 
 input:focus,
 textarea:focus {
-  border-color: var(--color-primary-blue);
-  box-shadow: 0 0 0 Real rgba(32, 63, 154, 0.1);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px var(--retro-dark);
+}
+
+/* UTILITIES */
+
+/* The main container for "Windows" */
+.retro-card,
+.glass {
+  /* .glass mapped to retro-card for compatibility */
+  background: #FFFFFF;
+  border: var(--retro-border);
+  box-shadow: var(--retro-shadow);
+  border-radius: 4px;
+  /* Slight roundness */
+  backdrop-filter: none;
+  /* Remove glassmorphism */
+}
+
+/* Styles specifically for buttons */
+.retro-btn,
+.nav-btn,
+button {
+  border: var(--retro-border);
+  background: #FFF;
+  box-shadow: var(--retro-shadow);
+  padding: 10px 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: var(--transition-smooth);
+  border-radius: 4px;
+}
+
+.retro-btn:hover,
+.nav-btn:hover,
+button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--retro-shadow-hover);
+  background-color: var(--retro-yellow);
+}
+
+.retro-btn:active,
+.nav-btn:active,
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--retro-shadow-active);
+}
+
+.retro-btn.primary {
+  background-color: var(--retro-pink);
+}
+
+/* Window Header Styling */
+.window-header {
+  background: var(--retro-dark);
+  color: var(--retro-green);
+  padding: 8px 12px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  border-bottom: var(--retro-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF;
+  border-left: var(--retro-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--retro-dark);
+  border: 2px solid #FFF;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--retro-pink);
 }

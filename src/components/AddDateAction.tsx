@@ -17,10 +17,10 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
   const [customCategoryName, setCustomCategoryName] = useState('');
 
   const categories: { id: PlannedDate['category']; icon: any; label: string; color: string }[] = [
-    { id: 'event', icon: CalendarIcon, label: 'Événement', color: 'var(--palette-blue)' },
-    { id: 'food', icon: Utensils, label: 'Restau', color: 'var(--palette-orange)' },
-    { id: 'surprise', icon: Sparkles, label: 'Surprise', color: 'var(--palette-yellow)' },
-    { id: 'custom', icon: Heart, label: 'Autre', color: 'var(--palette-pink)' },
+    { id: 'event', icon: CalendarIcon, label: 'Sortie', color: 'var(--retro-blue)' },
+    { id: 'food', icon: Utensils, label: 'Miam', color: 'var(--retro-orange)' },
+    { id: 'surprise', icon: Sparkles, label: 'Bonus', color: 'var(--retro-yellow)' },
+    { id: 'custom', icon: Heart, label: 'Autre', color: 'var(--retro-pink)' },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,11 +40,11 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
   };
 
   return (
-    <div className="add-action-card glass">
+    <div className="add-action-card retro-card">
       {!isOpen ? (
         <button className="expand-btn" onClick={() => setIsOpen(true)}>
           <Plus size={24} />
-          <span>Prévoir une sortie pour le {format(selectedDate, 'do MMMM', { locale: fr })}</span>
+          <span>NOUVELLE_ENTREE_POUR_{format(selectedDate, 'dd_MM', { locale: fr }).toUpperCase()}</span>
         </button>
       ) : (
         <motion.form
@@ -61,7 +61,7 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
                 className={`cat-btn ${category === cat.id ? 'active' : ''}`}
                 onClick={() => setCategory(cat.id)}
                 title={cat.label}
-                style={category === cat.id ? { color: cat.color, borderColor: cat.color } : {}}
+                style={category === cat.id ? { backgroundColor: cat.color } : {}}
               >
                 <cat.icon size={20} />
                 <p className="cat-label">{cat.label}</p>
@@ -74,7 +74,7 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               type="text"
-              placeholder="Nom de la catégorie (ex: Bowling)"
+              placeholder="NOM_CATEGORIE..."
               value={customCategoryName}
               onChange={(e) => setCustomCategoryName(e.target.value)}
               className="custom-cat-input"
@@ -84,16 +84,16 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
           <input
             type="text"
             autoFocus
-            placeholder="Titre de la sortie..."
+            placeholder="TITRE_ENTREE..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
 
           <div className="form-footer">
-            <button type="button" className="cancel-btn" onClick={() => setIsOpen(false)}>Annuler</button>
-            <button type="submit" className="submit-btn" disabled={!title.trim()}>
-              Ajouter au {format(selectedDate, 'do MMMM', { locale: fr })}
+            <button type="button" className="retro-btn cancel-btn" onClick={() => setIsOpen(false)}>ANNULER</button>
+            <button type="submit" className="retro-btn submit-btn" disabled={!title.trim()}>
+              CONFIRMER
             </button>
           </div>
         </motion.form>
@@ -102,21 +102,22 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
       <style>{`
         .add-action-card {
           padding: 1.5rem;
-          border-radius: 24px;
           background: white;
-          box-shadow: 0 12px 32px rgba(32, 63, 154, 0.1);
+          border: var(--retro-border);
+          box-shadow: var(--retro-shadow);
         }
         .expand-btn {
           width: 100%;
           display: flex;
           align-items: center;
           gap: 1rem;
-          color: var(--palette-green);
-          font-weight: 700;
-          font-size: 1.125rem;
+          color: var(--retro-dark);
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          text-transform: uppercase;
         }
         .expand-btn:hover {
-          color: var(--color-primary-pink);
+          color: var(--retro-pink);
         }
         .add-form {
           display: flex;
@@ -135,24 +136,20 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
-          padding: 1rem 0.5rem;
-          border-radius: 12px;
-          background: var(--color-beige);
-          color: var(--color-grey-blue);
+          padding: 8px;
+          border: var(--retro-border);
+          background: #FFF;
           transition: var(--transition-smooth);
-          border: 1px solid transparent;
         }
         .cat-btn:hover:not(.active) {
-          background: rgba(32, 63, 154, 0.05);
-          color: var(--color-primary-blue);
+          background: var(--retro-yellow);
         }
         .cat-btn.active {
-          background: white;
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.1);
+          box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
         }
         .cat-label {
-          font-size: 0.7rem;
-          font-weight: 700;
+          font-family: var(--font-display);
+          font-size: 1rem;
           text-transform: uppercase;
           margin: 0;
         }
@@ -161,28 +158,15 @@ export const AddDateAction: React.FC<AddDateActionProps> = ({ selectedDate, onAd
           justify-content: flex-end;
           gap: 1rem;
         }
-        .cancel-btn {
-          color: var(--color-grey-blue);
-          font-size: 0.875rem;
-        }
         .submit-btn {
-          background: var(--palette-pink);
-          color: white;
-          padding: 0.6rem 1.2rem;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          background: var(--retro-green);
         }
-        .submit-btn:hover {
-          filter: brightness(1.1);
+        .cancel-btn {
+             background: #eee;
         }
         .custom-cat-input {
-          border-bottom: 2px dashed var(--palette-pink) !important;
+          border-bottom: 2px dashed var(--retro-dark) !important;
           margin-bottom: -0.5rem;
-          color: var(--palette-pink) !important;
         }
       `}</style>
     </div>

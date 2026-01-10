@@ -23,7 +23,7 @@ export const ActivitiesWheel: React.FC<ActivitiesWheelProps> = ({ activities }) 
     if (filtered.length === 0) {
       setTimeout(() => {
         setIsSpinning(false);
-        setResult({ id: 'none', title: 'Aucune idée pour ce budget ! 😅', authorId: 'mathis', budget: wheelBudget });
+        setResult({ id: 'none', title: 'Aucune idée pour ce budget !', authorId: 'mathis', budget: wheelBudget });
       }, 1500);
       return;
     }

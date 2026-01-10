@@ -47,13 +47,13 @@ export const Calendar: React.FC<CalendarProps> = ({
   });
 
   return (
-    <div className="calendar-container glass">
+    <div className="calendar-container">
       <div className="calendar-header">
-        <button onClick={prevMonth} className="nav-btn"><ChevronLeft size={24} /></button>
+        <button onClick={prevMonth} className="retro-btn nav-btn"><ChevronLeft size={24} /></button>
         <div className="month-display">
           <h2>{format(currentMonth, 'MMMM yyyy', { locale: fr })}</h2>
         </div>
-        <button onClick={nextMonth} className="nav-btn"><ChevronRight size={24} /></button>
+        <button onClick={nextMonth} className="retro-btn nav-btn"><ChevronRight size={24} /></button>
       </div>
 
       <div className="calendar-grid">
@@ -82,8 +82,8 @@ export const Calendar: React.FC<CalendarProps> = ({
           return (
             <motion.div
               key={day.toString()}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.05, zIndex: 10 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSelectedDate(day)}
               className={`calendar-day ${!isCurrentMonth ? 'outside-month' : ''} ${isSelected ? 'selected' : ''}`}
             >
@@ -96,7 +96,7 @@ export const Calendar: React.FC<CalendarProps> = ({
                       <div
                         key={r.id}
                         className="range-bar"
-                        style={{ backgroundColor: r.color || `var(--palette-${['blue', 'pink', 'green', 'orange', 'yellow'][index % 5]})` }}
+                        style={{ backgroundColor: r.color || `var(--retro-${['blue', 'pink', 'green', 'orange', 'yellow'][index % 5]})`, border: '1px solid black' }}
                       />
                     ))}
                   </div>
@@ -111,9 +111,10 @@ export const Calendar: React.FC<CalendarProps> = ({
                       className="heart-indicator"
                     >
                       <Heart
-                        size={8}
-                        fill={pd.authorId === 'partner' ? 'var(--color-primary-pink)' : 'var(--color-primary-blue)'}
-                        color={pd.authorId === 'partner' ? 'var(--color-primary-pink)' : 'var(--color-primary-blue)'}
+                        size={10}
+                        fill={pd.authorId === 'partner' ? 'var(--retro-pink)' : 'var(--retro-blue)'}
+                        color="black"
+                        strokeWidth={2}
                       />
                     </motion.div>
                   ))}
@@ -127,90 +128,86 @@ export const Calendar: React.FC<CalendarProps> = ({
       <style>{`
         .calendar-container {
           padding: 2rem;
-          border-radius: 24px;
+          background: #FFF;
+          border: var(--retro-border);
+          box-shadow: var(--retro-shadow);
           width: 100%;
-          max-width: 600px; /* Centered and controlled width */
+          max-width: 600px;
         }
         .calendar-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 2rem;
+          border-bottom: 2px solid var(--retro-dark);
+          padding-bottom: 1rem;
         }
         .month-display h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: var(--color-beige);
+          font-size: 2rem;
+          font-family: var(--font-display);
+          color: var(--retro-dark);
+          text-transform: uppercase;
         }
         .nav-btn {
-          color: var(--color-grey-blue);
-          padding: 0.5rem;
-          border-radius: 50%;
-        }
-        .nav-btn:hover {
-          color: var(--color-primary-blue);
-          background: var(--bg-glass);
-        }
-        .calendar-header h2 {
-          font-family: 'Outfit', sans-serif;
-          font-weight: 800;
-          color: var(--palette-pink);
-          text-transform: capitalize;
+          padding: 4px;
         }
         .weekdays-container {
           grid-column: 1 / span 7;
           display: grid;
           grid-template-columns: repeat(7, 1fr);
-          background: var(--palette-green);
-          padding: 8px 0;
-          border-radius: 12px;
+          background: var(--retro-dark);
+          padding: 4px 0;
           margin-bottom: 4px;
+          border: var(--retro-border);
         }
         .weekday-label {
           text-align: center;
-          color: white;
-          font-weight: 800;
-          font-size: 0.75rem;
+          color: var(--retro-green);
+          font-family: var(--font-display);
+          font-size: 1.2rem;
           text-transform: uppercase;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            background: var(--retro-dark);
+            border: var(--retro-border);
+            padding: 4px;
         }
         .calendar-day {
           aspect-ratio: 1;
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 8px 4px;
-          border-radius: 12px;
+          padding: 4px;
           cursor: pointer;
-          transition: var(--transition-smooth);
           background: white;
-          border: 1px solid var(--border-glass);
+          border: 1px solid var(--retro-dark);
           position: relative;
         }
         .calendar-day:hover {
-          background: rgba(32, 63, 154, 0.05);
-          border-color: var(--color-pastel-blue);
+          background: var(--retro-yellow);
         }
         .calendar-day.selected {
-          background: var(--palette-blue);
-          color: white;
-          border-color: var(--palette-blue);
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.2);
+          background: var(--retro-blue);
+          box-shadow: inset 4px 4px 0px rgba(0,0,0,0.2);
         }
         .calendar-day.selected .day-number {
-          color: white;
+          color: var(--retro-dark);
+          text-decoration: underline;
         }
         .day-number {
-          font-weight: 700;
-          font-size: 1rem;
-          margin-bottom: 4px;
-          color: var(--palette-blue);
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          color: var(--retro-dark);
         }
         .day-indicators {
           width: 100%;
           display: flex;
           flex-direction: column;
           gap: 2px;
-          padding: 0 4px;
+          padding: 2px;
         }
         .ranges-stack {
           display: flex;
@@ -219,9 +216,8 @@ export const Calendar: React.FC<CalendarProps> = ({
           width: 100%;
         }
         .range-bar {
-          height: 3px;
+          height: 6px;
           width: 100%;
-          border-radius: 2px;
         }
         .hearts-stack {
           display: flex;
@@ -231,9 +227,10 @@ export const Calendar: React.FC<CalendarProps> = ({
           margin-top: 2px;
         }
         .outside-month {
-          opacity: 0.3;
-          background: transparent;
-          border: 1px dashed var(--border-glass);
+          background: #EEE;
+          opacity: 0.6;
+          background-image: radial-gradient(#ccc 15%, transparent 16%);
+          background-size: 4px 4px;
         }
         .heart-indicator {
           display: flex;

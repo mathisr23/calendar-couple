@@ -24,8 +24,8 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
   }, [activeCategory]);
 
   const categories: { id: AddressCategory; icon: any; label: string }[] = [
-    { id: 'restaurants', icon: Utensils, label: 'Restaurants' },
-    { id: 'pastries', icon: Coffee, label: 'Pâtisseries' },
+    { id: 'restaurants', icon: Utensils, label: 'RESTAURANTS' },
+    { id: 'douceurs', icon: Coffee, label: 'DOUCEURS' },
   ];
 
   const filteredAddresses = addresses.filter(a => a.category === activeCategory);
@@ -45,15 +45,14 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
   return (
     <div className="addresses-container">
       <div className="address-header">
-        <h2 className="title-handwritten">Bonnes Adresses</h2>
-        <p className="subtitle">Nos endroits favoris ✨</p>
+        <h2 className="title-retro">MEILLEURES_ADRESSES.EXE</h2>
       </div>
 
-      <div className="tabs-container glass">
+      <div className="tabs-container">
         {categories.map((cat) => (
           <button
             key={cat.id}
-            className={`tab-btn ${activeCategory === cat.id ? 'active' : ''}`}
+            className={`retro-tab-btn ${activeCategory === cat.id ? 'active' : ''}`}
             onClick={() => setActiveCategory(cat.id)}
           >
             <cat.icon size={18} />
@@ -62,15 +61,15 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
         ))}
       </div>
 
-      <div className="content-card glass">
+      <div className="content-card retro-card">
         <form className="add-place-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder={`Ajouter un(e) ${categories.find(c => c.id === activeCategory)?.label.slice(0, -1)}...`}
+            placeholder={`Nouveau ${categories.find(c => c.id === activeCategory)?.label}...`}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
-          <button type="submit" className="add-btn">
+          <button type="submit" className="retro-btn add-btn">
             <Plus size={20} />
           </button>
         </form>
@@ -83,7 +82,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                 animate={{ opacity: 1 }}
                 className="empty-msg"
               >
-                Aucun(e) {categories.find(c => c.id === activeCategory)?.label.toLowerCase().slice(0, -1)} encore. Ajoutez-en un(e) !
+                Aucune donnée dans le répertoire /{activeCategory}.
               </motion.p>
             ) : (
               filteredAddresses.map((addr) => (
@@ -99,7 +98,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                     className="check-btn"
                     onClick={() => onUpdate(addr.id, { completed: !addr.completed })}
                   >
-                    {addr.completed ? <CheckCircle size={20} color="var(--color-primary-green)" /> : <Circle size={20} />}
+                    {addr.completed ? <CheckCircle size={24} color="var(--retro-green)" /> : <Circle size={24} />}
                   </button>
 
                   <div className="place-info">
@@ -112,12 +111,6 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                       <RatingSelector
                         value={addr.rating1}
                         onChange={(val) => onUpdate(addr.id, { rating1: val })}
-                        disabled={false} // Allow editing own rating. Logic complexity: rating1 vs rating2 assignment is tricky with dynamic users. 
-                      // Simplified: Everyone edits rating1? No, we need to map users to rating slots.
-                      // Ideally: Addresses table should have a separate 'ratings' table.
-                      // FOR NOW: Let's assume User 1 (Creator/Older) is rating1, User 2 is rating2.
-                      // OR: Just let anyone edit anything for MVP?
-                      // Better MVP: Just let anyone edit these for now to avoid specific "rating1 refers to UUID X" logic without schema change.
                       />
                     </div>
                     <div className="user-rating">
@@ -125,17 +118,16 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                       <RatingSelector
                         value={addr.rating2}
                         onChange={(val) => onUpdate(addr.id, { rating2: val })}
-                        disabled={false}
                       />
                     </div>
 
                     <div className="total-score">
-                      <span className="score-label">Moyenne</span>
+                      <span className="score-label">TOTAL</span>
                       <div className="score-value">
                         {calculateTotal(addr.rating1, addr.rating2) !== null ? (
-                          <span className="sum">{calculateTotal(addr.rating1, addr.rating2)}/10</span>
+                          <span className="sum">{calculateTotal(addr.rating1, addr.rating2)}</span>
                         ) : (
-                          <span className="waiting">n'a pas encore voté</span>
+                          <span className="waiting">--</span>
                         )}
                       </div>
                     </div>
@@ -157,55 +149,50 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           margin: 0 auto;
           display: flex;
           flex-direction: column;
-          gap: 2rem;
+          gap: 1rem;
         }
         .address-header {
           text-align: center;
+          margin-bottom: 1rem;
         }
-        .title-handwritten {
-          font-family: 'Outfit', sans-serif;
+        .title-retro {
+          font-family: var(--font-display);
           font-size: 3rem;
-          color: var(--palette-yellow);
+          color: var(--retro-dark);
+          text-shadow: 4px 4px 0px var(--retro-pink);
           margin-bottom: 0.5rem;
-          position: relative;
-        }
-        .subtitle {
-          color: var(--color-grey-blue);
-          font-style: italic;
         }
         .tabs-container {
           display: flex;
-          padding: 0.5rem;
-          border-radius: 15px;
           gap: 0.5rem;
+          margin-left: 1rem;
         }
-        .tab-btn {
-          flex: 1;
+        .retro-tab-btn {
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 0.75rem;
-          padding: 1rem;
-          border-radius: 12px;
-          color: var(--color-grey-blue);
-          font-weight: 700;
-          transition: all 0.3s ease;
+          gap: 0.5rem;
+          padding: 8px 16px;
+          border: var(--retro-border);
+          border-bottom: none;
+          background: #eee;
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          color: var(--text-muted);
+          position: relative;
+          top: 2px;
         }
-        .tab-btn.active {
-          background: white;
-          color: var(--palette-pink);
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.1);
+        .retro-tab-btn.active {
+          background: #FFF;
+          color: var(--retro-dark);
+          z-index: 2;
+          padding-bottom: 10px;
         }
-        .tab-btn:hover:not(.active) {
-          background: rgba(32, 63, 154, 0.05);
-        }
+        
         .content-card {
           padding: 2.5rem;
-          border-radius: 24px;
           min-height: 400px;
-          background: rgba(32, 63, 154, 0.02);
-          box-shadow: inset 0 2px 10px rgba(32, 63, 154, 0.03);
-          border: 1px solid var(--border-glass);
+          background: #FFF;
+          z-index: 1;
         }
         .add-place-form {
           display: flex;
@@ -214,41 +201,39 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
         }
         .add-place-form input {
           flex: 1;
-          background: var(--color-beige);
-          border: none;
         }
         .add-btn {
-          background: var(--palette-pink);
-          color: white;
+          background: var(--retro-green);
+          color: var(--retro-dark);
           width: 48px;
           height: 48px;
-          border-radius: 14px;
+          padding: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.2);
         }
         .address-list {
           display: flex;
           flex-direction: column;
-          gap: 1.25rem;
+          gap: 1rem;
         }
         .address-item {
           display: flex;
           align-items: center;
           gap: 1.5rem;
-          padding: 1.25rem;
+          padding: 1rem;
           background: white;
-          border-radius: 16px;
-          border: 1px solid var(--border-glass);
-          transition: all 0.3s ease;
+          border: 1px solid var(--retro-dark);
+          box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
         }
         .address-item:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(32, 63, 154, 0.08);
+          box-shadow: 6px 6px 0px var(--retro-pink);
         }
         .address-item.completed {
-          opacity: 0.5;
+          opacity: 0.6;
+          box-shadow: none;
+          background: #f0f0f0;
         }
         .address-item.completed .place-name {
           text-decoration: line-through;
@@ -257,74 +242,62 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           flex: 1;
         }
         .place-name {
-          font-weight: 800;
+          font-family: var(--font-main);
+          font-weight: 700;
           font-size: 1.125rem;
+          text-transform: uppercase;
         }
-        .address-item:nth-child(5n+1) .place-name { color: var(--palette-blue); }
-        .address-item:nth-child(5n+2) .place-name { color: var(--palette-pink); }
-        .address-item:nth-child(5n+3) .place-name { color: var(--palette-green); }
-        .address-item:nth-child(5n+4) .place-name { color: var(--palette-orange); }
-        .address-item:nth-child(5n+5) .place-name { color: var(--palette-yellow); }
         .ratings-section {
           display: flex;
           align-items: center;
-          gap: 2.5rem;
+          gap: 2rem;
         }
         .user-rating {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.25rem;
         }
         .user-label {
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--palette-blue);
-          font-weight: 800;
+          font-family: var(--font-display);
+          font-size: 1rem;
         }
         .total-score {
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 0.25rem;
-          min-width: 100px;
-          padding: 8px 12px;
-          background: var(--color-pastel-pink);
-          border-radius: 12px;
+          min-width: 60px;
+          padding: 4px;
+          border: 2px solid var(--retro-dark);
+          background: var(--retro-yellow);
         }
         .score-label {
           font-size: 0.65rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: white;
           font-weight: 800;
         }
         .sum {
-          font-weight: 800;
-          font-size: 1.25rem;
-          color: white;
+          font-family: var(--font-display);
+          font-weight: 400;
+          font-size: 1.5rem;
         }
         .waiting {
-          font-size: 0.75rem;
-          font-style: italic;
-          color: var(--color-grey-blue);
+          font-family: var(--font-display);
+          font-size: 1rem;
         }
         .delete-btn {
-          color: var(--color-grey-blue);
+          color: var(--text-muted);
           padding: 0.5rem;
-          border-radius: 8px;
           transition: all 0.2s;
         }
         .delete-btn:hover {
-          color: var(--color-primary-pink);
-          background: rgba(232, 71, 151, 0.1);
+          color: var(--retro-pink);
         }
         .empty-msg {
           text-align: center;
           margin-top: 4rem;
-          color: var(--color-grey-blue);
-          font-style: italic;
+          font-family: var(--font-main);
+          color: var(--text-muted);
         }
       `}</style>
     </div>
@@ -341,7 +314,7 @@ const RatingSelector: React.FC<{
       {[...Array(6)].map((_, i) => (
         <button
           key={i}
-          className={`rate-circle ${value === i ? 'active' : ''}`}
+          className={`rate-box ${value === i ? 'active' : ''}`}
           onClick={() => !disabled && onChange(i)}
           disabled={disabled}
         >
@@ -351,36 +324,30 @@ const RatingSelector: React.FC<{
       <style>{`
         .rating-selector {
           display: flex;
-          gap: 3px;
+          gap: 2px;
         }
-        .rating-selector.disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-        .rate-circle {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          font-size: 0.75rem;
-          font-weight: 700;
+        .rate-box {
+          width: 20px;
+          height: 20px;
+          font-family: var(--font-display);
+          font-size: 1rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255, 255, 255, 0.05);
-          color: var(--color-grey-blue);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.2s;
+          background: #FFF;
+          border: 1px solid var(--retro-dark);
+          cursor: pointer;
         }
-        .rate-circle.active {
-          background: var(--color-primary-blue);
-          color: white;
-          border-color: var(--color-primary-blue);
+        .rate-box:hover:not(:disabled) {
+            background: var(--retro-blue);
         }
-        .rate-circle:hover:not(.active):not(:disabled) {
-          background: rgba(255, 255, 255, 0.1);
+        .rate-box.active {
+          background: var(--retro-dark);
+          color: #FFF;
         }
-        .rate-circle:disabled {
+        .rate-box:disabled {
           cursor: not-allowed;
+          opacity: 0.5;
         }
       `}</style>
     </div>

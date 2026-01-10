@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
+import { LogOut, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -12,90 +11,118 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
 
   return (
     <header className="header-container">
-      <button onClick={signOut} className="logout-btn" aria-label="Se déconnecter">
-        <LogOut size={20} />
-      </button>
+      <div className="title-block">
+        <div className="retro-icon">
+          <Heart size={32} fill="var(--retro-pink)" stroke="var(--retro-dark)" strokeWidth={3} />
+        </div>
+        <div>
+          <span className="subtitle">SYSTEM_ROOT: LOVE_PROTOCOL</span>
+          <h1 className="main-title">DATE_2026</h1>
+        </div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="header-content"
-      >
-        <span className="subtitle">NOTRE AVENTURE AMOUREUSE</span>
-        <h1 className="main-title">DATE 2026</h1>
-
+      <div className="header-actions">
         {inviteCode && (
-          <div className="invite-code-container">
-            <span className="invite-label">Code Partenaire:</span>
-            <code className="invite-code" onClick={() => navigator.clipboard.writeText(inviteCode)}>
+          <div className="retro-badge">
+            <span className="label">CODE:</span>
+            <code className="value" onClick={() => navigator.clipboard.writeText(inviteCode)}>
               {inviteCode}
             </code>
           </div>
         )}
-      </motion.div>
+
+        <button onClick={signOut} className="retro-btn logout-btn" aria-label="Se déconnecter">
+          <LogOut size={18} /> QUIT
+        </button>
+      </div>
+
       <style>{`
         .header-container {
-          position: relative;
-          padding: 4rem 2rem 2rem;
-          text-align: center;
+          display: flex;
+          justify-content: space-between;
+          align-items: end;
+          padding: 2rem 0;
+          border-bottom: 2px dashed var(--retro-dark);
+          margin-bottom: 3rem;
+          flex-wrap: wrap;
+          gap: 1rem;
         }
-        .logout-btn {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: var(--color-grey-blue);
-          padding: 8px;
-          border-radius: 50%;
-          transition: all 0.2s;
+
+        .title-block {
           display: flex;
           align-items: center;
-          justify-content: center;
+          gap: 1rem;
         }
-        .logout-btn:hover {
-          background: rgba(32, 63, 154, 0.05);
-          color: var(--color-primary-blue);
+
+        .retro-icon {
+            background: #FFF;
+            border: var(--retro-border);
+            box-shadow: var(--retro-shadow);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .subtitle {
-          font-size: 0.875rem;
-          font-weight: 500;
-          letter-spacing: 0.2em;
-          color: var(--color-grey-blue);
-          text-transform: uppercase;
-          margin-bottom: 0.5rem;
+          font-family: var(--font-main);
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          letter-spacing: 0.1em;
           display: block;
+          margin-bottom: 4px;
         }
+
         .main-title {
-          font-size:clamp(3rem, 10vw, 6rem);
-          font-weight: 800;
+          font-family: var(--font-display);
+          font-size: 4rem;
+          line-height: 0.8;
+          color: var(--retro-dark);
+          text-shadow: 4px 4px 0px var(--retro-blue);
           margin: 0;
-          color: var(--palette-pink);
-          letter-spacing: -0.02em;
         }
-        .invite-code-container {
-          margin-top: 1rem;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: rgba(255, 255, 255, 0.5);
-          padding: 0.5rem 1rem;
-          border-radius: 12px;
-          font-size: 0.875rem;
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-        .invite-label {
-          color: var(--color-grey-blue);
+
+        .retro-badge {
+            background: var(--retro-yellow);
+            border: var(--retro-border);
+            padding: 4px 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            box-shadow: 2px 2px 0px var(--retro-dark);
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
-        .invite-code {
-          font-weight: 700;
-          color: var(--color-primary-blue);
-          letter-spacing: 1px;
-          cursor: pointer;
+        
+        .retro-badge .value {
+            font-weight: 700;
+            cursor: pointer;
         }
-        .invite-code:active {
-          transform: scale(0.95);
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--retro-pink);
+            color: #FFF;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
       `}</style>
     </header>

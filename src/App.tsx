@@ -80,7 +80,11 @@ function AppContent() {
           authorId: a.author_id // Map snake_case to camelCase
         })));
       }
-      if (profilesRes.data) setPartnerProfile(profilesRes.data);
+      if (profilesRes.data) {
+        setPartnerProfile(profilesRes.data);
+      } else {
+        setPartnerProfile(null);
+      }
       if (coupleRes.data) setInviteCode(coupleRes.data.invite_code);
 
     } catch (e) {
@@ -148,12 +152,42 @@ function AppContent() {
     await supabase.from('activities').delete().eq('id', id);
   };
 
+  const addBucketItem = async (text: string) => {
+    if (!profile?.couple_id) return;
+    const tempId = Date.now().toString();
+    const newItem: BucketIdea = { id: tempId, text, completed: false };
+    setBucketList([...bucketList, newItem]);
+
+    const { data, error } = await supabase.from('bucket_list_items').insert({
+      couple_id: profile.couple_id,
+      text,
+      completed: false
+    }).select().single();
+
+    if (data) {
+      // Update with real ID
+      setBucketList(prev => prev.map(item => item.id === tempId ? { ...item, id: data.id } : item));
+    }
+  };
+
+  const deleteBucketItem = async (id: string) => {
+    setBucketList(bucketList.filter(i => i.id !== id));
+    await supabase.from('bucket_list_items').delete().eq('id', id);
+  };
+
+  const toggleBucketItem = async (id: string, completed: boolean) => {
+    setBucketList(bucketList.map(i => i.id === id ? { ...i, completed } : i));
+    await supabase.from('bucket_list_items').update({ completed }).eq('id', id);
+  };
+
 
 
 
   // --- Render Logic ---
 
-  if (authLoading) return <div className="loading-screen">Chargement...</div>;
+  // --- Render Logic ---
+
+  if (authLoading) return <div className="loading-screen">INITIALISATION POTATO OS...</div>;
   if (!user) return <LoginPage />;
   if (!profile?.couple_id) return <OnboardingPage />;
 
@@ -161,82 +195,83 @@ function AppContent() {
     <Layout>
       <Header inviteCode={inviteCode} />
 
-      <div className="nav-toggle glass">
-        <button
-          className={`nav-btn ${activePage === 'calendar' ? 'active' : ''}`}
-          onClick={() => setActivePage('calendar')}
-        >
-          Calendrier
-        </button>
-        <button
-          className={`nav-btn ${activePage === 'addresses' ? 'active' : ''}`}
-          onClick={() => setActivePage('addresses')}
-        >
-          Bonnes Adresses
-        </button>
-        <button
-          className={`nav-btn ${activePage === 'activities' ? 'active' : ''}`}
-          onClick={() => setActivePage('activities')}
-        >
-          Activités
-        </button>
-      </div>
-
-      {/* User Switcher is removed as we now have real auth */}
-      {/* We could add an "Invite Partner" button here instead if partner is missing? */}
-
       <main className="container main-content">
-        {activePage === 'calendar' ? (
-          <>
-            <div className="calendar-section">
-              <Calendar
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-                currentMonth={currentMonth}
-                setCurrentMonth={setCurrentMonth}
-                plannedDates={plannedDates}
-              />
-            </div>
+        <div className="retro-tabs">
+          <button
+            className={`retro-tab ${activePage === 'calendar' ? 'active' : ''}`}
+            onClick={() => setActivePage('calendar')}
+          >
+            CALENDRIER.EXE
+          </button>
+          <button
+            className={`retro-tab ${activePage === 'addresses' ? 'active' : ''}`}
+            onClick={() => setActivePage('addresses')}
+          >
+            ADRESSES.TXT
+          </button>
+          <button
+            className={`retro-tab ${activePage === 'activities' ? 'active' : ''}`}
+            onClick={() => setActivePage('activities')}
+          >
+            ACTIVITES.BAT
+          </button>
+        </div>
 
-            <div className="bottom-grid">
-              <MonthlyEvents
-                currentMonth={currentMonth}
-                plannedDates={plannedDates}
-                onAdd={addPlannedDate}
-                onDelete={deletePlannedDate}
-              />
-              <DateIdeas
-                ideas={bucketList}
-                setIdeas={setBucketList}
-              />
-              <div className="full-width-column">
-                <AddDateAction
+        <div className="retro-window-content retro-card">
+          {activePage === 'calendar' ? (
+            <>
+              <div className="calendar-section">
+                <Calendar
                   selectedDate={selectedDate}
-                  onAdd={addPlannedDate}
+                  setSelectedDate={setSelectedDate}
+                  currentMonth={currentMonth}
+                  setCurrentMonth={setCurrentMonth}
+                  plannedDates={plannedDates}
                 />
               </div>
-            </div>
-          </>
-        ) : activePage === 'activities' ? (
-          <Activities
-            activities={activities}
-            onAdd={addActivity}
-            onDelete={deleteActivity}
-            currentUserId={currentUserId}
-            partnerName={partnerProfile?.full_name || 'En attente...'}
-            userName={profile?.full_name || 'Moi'}
-          />
-        ) : (
-          <Addresses
-            addresses={addresses}
-            currentUser={currentUserId} // This is now a UUID
-            onAdd={addAddress}
-            onUpdate={updateAddress}
-            onDelete={deleteAddress}
-            partnerName={partnerProfile?.full_name || 'Partenaire'}
-            userName={profile?.full_name || 'Moi'}
-          />
-        )}
+
+              <div className="bottom-grid">
+                <MonthlyEvents
+                  currentMonth={currentMonth}
+                  plannedDates={plannedDates}
+                  onAdd={addPlannedDate}
+                  onDelete={deletePlannedDate}
+                />
+                <DateIdeas
+                  ideas={bucketList}
+                  onAdd={addBucketItem}
+                  onDelete={deleteBucketItem}
+                  onToggle={toggleBucketItem}
+                />
+                <div className="full-width-column">
+                  <AddDateAction
+                    selectedDate={selectedDate}
+                    onAdd={addPlannedDate}
+                  />
+                </div>
+              </div>
+            </>
+          ) : activePage === 'activities' ? (
+            <Activities
+              activities={activities}
+              onAdd={addActivity}
+              onDelete={deleteActivity}
+              currentUserId={currentUserId}
+              partnerName={partnerProfile?.full_name || 'En attente...'}
+              userName={profile?.full_name || 'Moi'}
+            />
+          ) : (
+            <Addresses
+              addresses={addresses}
+              currentUser={currentUserId}
+              onAdd={addAddress}
+              onUpdate={updateAddress}
+              onDelete={deleteAddress}
+              partnerName={partnerProfile?.full_name || 'Partenaire'}
+              userName={profile?.full_name || 'Moi'}
+            />
+          )}
+        </div>
       </main>
 
       <style>{`
@@ -245,46 +280,70 @@ function AppContent() {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--color-beige);
-            color: var(--color-primary-blue);
+            background: var(--retro-bg);
+            color: var(--retro-dark);
+            font-family: var(--font-display);
+            font-size: 2rem;
         }
         .main-content {
           display: flex;
           flex-direction: column;
-          gap: 3rem;
+          gap: 0;
           padding-bottom: 5rem;
           min-height: 70vh;
         }
-        .nav-toggle {
+        
+        /* TABS */
+        .retro-tabs {
           display: flex;
-          padding: 6px;
-          border-radius: 16px;
-          gap: 4px;
-          margin-bottom: 2rem;
-          background: rgba(32, 63, 154, 0.05);
+          gap: 8px;
+          padding-left: 12px;
+          margin-bottom: -2px; /* Overlap with window border */
+          z-index: 10;
         }
-        .nav-btn {
-          flex: 1;
-          padding: 10px;
-          border-radius: 12px;
-          font-weight: 600;
-          color: var(--color-grey-blue);
+        
+        .retro-tab {
+          background: #FFF;
+          border: var(--retro-border);
+          border-bottom: none;
+          padding: 8px 24px;
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          color: var(--text-muted);
+          position: relative;
+          top: 0;
+          transition: top 0.2s;
+          border-radius: 4px 4px 0 0;
         }
-        .nav-btn.active {
-          background: white;
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.1);
-          color: var(--palette-pink); /* Fallback */
+        
+        .retro-tab.active {
+          background: var(--retro-yellow); 
+          color: var(--retro-dark);
+          z-index: 12;
+          padding-bottom: 10px; /* Hide border of container */
+          box-shadow: 0 -4px 0 rgba(0,0,0,0.1);
         }
-        .nav-btn:nth-of-type(1).active { color: var(--palette-green); }
-        .nav-btn:nth-of-type(2).active { color: var(--palette-orange); }
-        .nav-btn:nth-of-type(3).active { color: var(--palette-blue); }
-        .nav-btn:hover:not(.active) {
-          color: var(--color-beige);
+
+        .retro-tab:hover:not(.active) {
+            top: -4px;
         }
+
+        /* WINDOW CONTENT */
+        .retro-window-content {
+          border: var(--retro-border);
+          background: #FFF;
+          padding: 2rem;
+          position: relative;
+          z-index: 1;
+          border-radius: 4px; /* Ensure generic card style is applied */
+        }
+        
+        /* Tweaks to internal layout */
         .calendar-section {
           display: flex;
           justify-content: center;
           width: 100%;
+          margin-bottom: 2rem;
         }
         .bottom-grid {
           display: grid;
@@ -301,6 +360,9 @@ function AppContent() {
         @media (max-width: 1024px) {
           .bottom-grid {
             grid-template-columns: 1fr;
+          }
+          .retro-tabs {
+             flex-wrap: wrap; 
           }
         }
       `}</style>

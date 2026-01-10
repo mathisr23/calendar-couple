@@ -5,86 +5,75 @@ import type { BucketIdea } from '../types';
 
 interface DateIdeasProps {
   ideas: BucketIdea[];
-  setIdeas: React.Dispatch<React.SetStateAction<BucketIdea[]>>;
+  onAdd: (text: string) => void;
+  onDelete: (id: string) => void;
+  onToggle: (id: string, completed: boolean) => void;
 }
 
-export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, setIdeas }) => {
+export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, onAdd, onDelete, onToggle }) => {
   const [newIdea, setNewIdea] = useState('');
 
   const addIdea = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newIdea.trim()) return;
-    setIdeas([{ id: Date.now().toString(), text: newIdea, completed: false }, ...ideas]);
+    onAdd(newIdea);
     setNewIdea('');
   };
 
-  const removeIdea = (id: string) => {
-    setIdeas(ideas.filter(i => i.id !== id));
-  };
-
-  const toggleIdea = (id: string) => {
-    setIdeas(ideas.map(i => i.id === id ? { ...i, completed: !i.completed } : i));
-  };
-
   return (
-    <div className="ideas-container glass">
-      <div className="ideas-header">
-        <div className="header-top">
-          <PartyPopper size={20} color="var(--palette-yellow)" />
-          <h3>À Faire / Objectifs</h3>
+    <div className="retro-card ideas-container">
+      <div className="window-header">
+        <div className="header-left">
+          <PartyPopper size={20} color="var(--retro-yellow)" />
+          <h3>LISTE_ENVIES.TXT</h3>
         </div>
-        <p className="ideas-subtitle">Notre liste d'envies ✨</p>
       </div>
 
-      <form onSubmit={addIdea} className="add-idea-form">
-        <input
-          type="text"
-          value={newIdea}
-          onChange={(e) => setNewIdea(e.target.value)}
-          placeholder="Ajouter une idée de sortie..."
-        />
-        <button type="submit" className="add-btn"><Plus size={20} /></button>
-      </form>
+      <div className="ideas-content">
+        <form onSubmit={addIdea} className="add-idea-form">
+          <input
+            type="text"
+            value={newIdea}
+            onChange={(e) => setNewIdea(e.target.value)}
+            placeholder="Nouvel objectif..."
+          />
+          <button type="submit" className="retro-btn add-btn"><Plus size={20} /></button>
+        </form>
 
-      <div className="ideas-list">
-        <AnimatePresence initial={false}>
-          {ideas.map((idea) => (
-            <motion.div
-              key={idea.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className={`idea-item ${idea.completed ? 'completed' : ''}`}
-            >
-              <div className="idea-content" onClick={() => toggleIdea(idea.id)}>
-                <div className={`checkbox ${idea.completed ? 'checked' : ''}`} />
-                <span>{idea.text}</span>
-              </div>
-              <button onClick={() => removeIdea(idea.id)} className="delete-btn">
-                <Trash2 size={16} />
-              </button>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        <div className="ideas-list">
+          <AnimatePresence initial={false}>
+            {ideas.map((idea) => (
+              <motion.div
+                key={idea.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className={`idea-item ${idea.completed ? 'completed' : ''}`}
+              >
+                <div className="idea-content" onClick={() => onToggle(idea.id, !idea.completed)}>
+                  <div className={`checkbox ${idea.completed ? 'checked' : ''}`} />
+                  <span>{idea.text}</span>
+                </div>
+                <button onClick={() => onDelete(idea.id)} className="delete-btn">
+                  <Trash2 size={16} />
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
 
       <style>{`
         .ideas-container {
-          padding: 1.5rem;
-          border-radius: 24px;
-          height: 100%;
+            height: 100%;
         }
-        .ideas-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .ideas-header h3 {
-          font-size: 1.125rem;
-          font-weight: 800;
-          color: var(--palette-yellow);
-          text-transform: uppercase;
+        .ideas-content {
+            padding: 1.5rem;
         }
         .add-idea-form {
           display: flex;
@@ -96,11 +85,11 @@ export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, setIdeas }) => {
           font-size: 0.875rem;
         }
         .add-btn {
-          background: var(--palette-yellow);
-          color: white;
+          background: var(--retro-yellow);
+          color: var(--retro-dark);
           width: 42px;
           height: 42px;
-          border-radius: 8px;
+          padding: 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -114,60 +103,48 @@ export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, setIdeas }) => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 1rem;
+          padding: 0.75rem;
           background: white;
-          border-radius: 16px;
-          border: 1px solid var(--border-glass);
-          transition: var(--transition-smooth);
+          border: 1px solid var(--retro-dark);
+          box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+          cursor: pointer;
         }
         .idea-item:hover {
-          transform: translateX(4px);
-          box-shadow: 4px 4px 12px rgba(32, 63, 154, 0.05);
+          transform: translateY(-1px);
         }
         .idea-content {
           display: flex;
           align-items: center;
           gap: 1rem;
           flex: 1;
-          cursor: pointer;
         }
         .checkbox {
           width: 18px;
           height: 18px;
-          border: 2px solid var(--color-grey-blue);
-          border-radius: 4px;
+          border: 2px solid var(--retro-dark);
           transition: var(--transition-smooth);
         }
         .checkbox.checked {
-          background: var(--palette-pink);
-          border-color: var(--palette-pink);
+          background: var(--retro-green);
+          box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
         }
         .idea-item span {
+          font-family: var(--font-main);
           font-size: 0.875rem;
-          transition: var(--transition-smooth);
-          font-weight: 600;
+          font-weight: 700;
         }
-        /* Random colors for idea items */
-        .idea-item:nth-child(5n+1) span { color: var(--palette-blue); }
-        .idea-item:nth-child(5n+2) span { color: var(--palette-pink); }
-        .idea-item:nth-child(5n+3) span { color: var(--palette-green); }
-        .idea-item:nth-child(5n+4) span { color: var(--palette-orange); }
-        .idea-item:nth-child(5n+5) span { color: var(--palette-yellow); }
 
         .idea-item.completed span {
           text-decoration: line-through;
           opacity: 0.5;
         }
         .delete-btn {
-          color: var(--color-grey-blue);
-          opacity: 0;
-          transition: var(--transition-smooth);
-        }
-        .idea-item:hover .delete-btn {
-          opacity: 1;
+          color: var(--text-muted);
+          opacity: 0.5;
         }
         .delete-btn:hover {
-          color: var(--palette-pink);
+          color: var(--retro-pink);
+          opacity: 1;
         }
       `}</style>
     </div>

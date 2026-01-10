@@ -35,18 +35,18 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
         <h3>{title}</h3>
       </div>
 
-      <div className="activity-list-container">
+      <div className="activity-list-container retro-box">
         {list.length === 0 ? (
-          <p className="empty-msg">Aucune idée encore... 💡</p>
+          <p className="empty-msg">Aucune donnée.</p>
         ) : (
           <ul className="activity-list">
             {list.map(activity => (
-              <li key={activity.id} className="activity-item glass">
+              <li key={activity.id} className="activity-item">
                 <div className="activity-info">
                   <span className="activity-title">{activity.title}</span>
                   <span className={`budget-pill ${activity.budget}`}>
                     <Coins size={12} />
-                    {activity.budget === 'low' ? 'Petit' : 'Grand'}
+                    {activity.budget === 'low' ? '€' : '€€€'}
                   </span>
                 </div>
                 <button
@@ -66,13 +66,13 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
 
   return (
     <div className="activities-page">
-      <div className="activity-creation glass">
+      <div className="activity-creation retro-card">
         <form onSubmit={handleSubmit} className="creation-form">
           <div className="input-group">
             <Sparkles size={20} className="icon" />
             <input
               type="text"
-              placeholder="Une nouvelle idée de sortie ?"
+              placeholder="NOUVELLE_ACTIVITE..."
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               required
@@ -83,23 +83,23 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
             <div className="budget-selector">
               <button
                 type="button"
-                className={`budget-btn ${budget === 'low' ? 'active' : ''}`}
+                className={`retro-btn budget-btn ${budget === 'low' ? 'active' : ''}`}
                 onClick={() => setBudget('low')}
               >
-                € Petit Budget
+                PETIT_BUDGET
               </button>
               <button
                 type="button"
-                className={`budget-btn ${budget === 'high' ? 'active' : ''}`}
+                className={`retro-btn budget-btn ${budget === 'high' ? 'active' : ''}`}
                 onClick={() => setBudget('high')}
               >
-                €€€ Grand Budget
+                GRAND_BUDGET
               </button>
             </div>
 
-            <button type="submit" className="add-btn" disabled={!newTitle.trim()}>
+            <button type="submit" className="retro-btn add-btn" disabled={!newTitle.trim()}>
               <Plus size={20} />
-              Ajouter
+              AJOUTER
             </button>
           </div>
         </form>
@@ -118,15 +118,15 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
         .activities-page {
           display: flex;
           flex-direction: column;
-          gap: 3rem;
+          gap: 2rem;
           padding-bottom: 5rem;
         }
 
         .activity-creation {
           padding: 2rem;
-          border-radius: 24px;
-          background: white;
-          box-shadow: 0 10px 40px rgba(32, 63, 154, 0.05);
+          background: #FFF;
+          border: var(--retro-border);
+          box-shadow: var(--retro-shadow);
         }
 
         .creation-form {
@@ -140,22 +140,25 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
           align-items: center;
           gap: 1rem;
           padding: 0.5rem 0;
-          border-bottom: 2px solid var(--color-beige);
+          border-bottom: 2px dashed var(--retro-dark);
         }
 
         .input-group .icon {
-          color: var(--palette-orange);
+          color: var(--retro-orange);
         }
 
         .input-group input {
           flex: 1;
           font-size: 1.25rem;
           font-weight: 600;
-          color: var(--palette-blue);
+          color: var(--retro-dark);
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          padding: 0;
         }
-
-        .input-group input::placeholder {
-          color: var(--color-pastel-blue);
+        .input-group input:focus {
+            transform: none;
         }
 
         .creation-footer {
@@ -168,43 +171,26 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
         .budget-selector {
           display: flex;
           gap: 1rem;
-          background: var(--color-beige);
-          padding: 4px;
-          border-radius: 12px;
         }
 
         .budget-btn {
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: var(--color-grey-blue);
-          transition: var(--transition-smooth);
+            background: #eee;
+            padding: 8px 16px;
         }
 
         .budget-btn.active {
-          background: white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          background: var(--retro-green);
+          color: var(--retro-dark);
+          box-shadow: inset 2px 2px 0 rgba(0,0,0,0.2);
+          transform: translate(2px, 2px);
         }
-        
-        button.budget-btn:nth-of-type(1).active { color: var(--palette-green); }
-        button.budget-btn:nth-of-type(2).active { color: var(--palette-orange); }
 
         .add-btn {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background: var(--color-primary-blue);
+          background: var(--retro-pink);
           color: white;
-          padding: 0.75rem 2rem;
-          border-radius: 12px;
-          font-weight: 800;
-          transition: var(--transition-smooth);
-        }
-
-        .add-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(32, 63, 154, 0.2);
         }
 
         .activities-grid {
@@ -228,41 +214,21 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
         .avatar {
           width: 40px;
           height: 40px;
-          border-radius: 50%;
+          border: var(--retro-border);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: var(--retro-dark);
+          background: #FFF;
         }
-
-        .mathis .avatar { background: var(--palette-blue); }
-        .partner .avatar { background: var(--palette-pink); }
-
-        .column-header h3 {
-          font-weight: 800;
-          font-size: 1.5rem;
-        }
-        
-        .mathis .column-header h3 { color: var(--palette-blue); }
-        .partner .column-header h3 { color: var(--palette-pink); }
 
         .activity-list-container {
           max-height: 400px;
           overflow-y: auto;
-          padding-right: 0.5rem;
-        }
-
-        /* Custom Scrollbar */
-        .activity-list-container::-webkit-scrollbar {
-          width: 6px;
-        }
-        .activity-list-container::-webkit-scrollbar-track {
-          background: var(--color-beige);
-          border-radius: 10px;
-        }
-        .activity-list-container::-webkit-scrollbar-thumb {
-          background: var(--color-pastel-blue);
-          border-radius: 10px;
+          background: #FFF;
+          border: var(--retro-border);
+          box-shadow: var(--retro-shadow);
+          padding: 1rem;
         }
 
         .activity-list {
@@ -276,68 +242,62 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1rem 1.5rem;
-          background: white;
-          border-radius: 16px;
-          border: 1px solid var(--border-glass);
-          transition: var(--transition-smooth);
+          padding: 0.5rem;
+          background: var(--retro-bg);
+          border: 1px solid var(--retro-dark);
         }
 
         .activity-item:hover {
-          transform: translateX(5px);
-          border-color: var(--color-pastel-blue);
+          background: #FFF;
         }
 
         .activity-info {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 0.25rem;
         }
 
         .activity-title {
-          font-weight: 800;
+          font-family: var(--font-main);
+          font-weight: 700;
+          text-transform: uppercase;
         }
-        .activity-item:nth-child(5n+1) .activity-title { color: var(--palette-blue); }
-        .activity-item:nth-child(5n+2) .activity-title { color: var(--palette-pink); }
-        .activity-item:nth-child(5n+3) .activity-title { color: var(--palette-green); }
-        .activity-item:nth-child(5n+4) .activity-title { color: var(--palette-orange); }
-        .activity-item:nth-child(5n+5) .activity-title { color: var(--palette-yellow); }
 
         .budget-pill {
           display: inline-flex;
           align-items: center;
           gap: 0.25rem;
-          font-size: 0.75rem;
-          font-weight: 800;
-          padding: 2px 8px;
-          border-radius: 100px;
-          text-transform: uppercase;
+          font-size: 0.85rem;
+          font-family: var(--font-display);
+          padding: 4px 8px;
+          border: 1px solid var(--retro-dark);
+          box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+          font-weight: 400; /* VT323 is display font, usually bold enough */
         }
 
         .budget-pill.low {
-          background: rgba(45, 106, 79, 0.1);
-          color: #2D6A4F;
+          background: var(--retro-green);
+          color: var(--retro-dark);
         }
 
         .budget-pill.high {
-          background: rgba(245, 121, 59, 0.1);
-          color: var(--palette-orange);
+          background: var(--retro-orange);
+          color: var(--retro-dark);
         }
 
         .delete-btn {
-          color: var(--color-grey-blue);
-          opacity: 0.3;
-          transition: var(--transition-smooth);
-          padding: 0.5rem;
+          color: var(--text-muted);
+          opacity: 0.5;
         }
 
         .activity-item:hover .delete-btn {
           opacity: 1;
         }
-
-        .delete-btn:hover {
-          color: var(--color-primary-pink);
-          transform: scale(1.1);
+        
+        .empty-msg {
+            font-family: var(--font-display);
+            text-align: center;
+            opacity: 0.5;
         }
 
         .wheel-section {
