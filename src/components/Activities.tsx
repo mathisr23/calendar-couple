@@ -168,6 +168,29 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
           gap: 2rem;
         }
 
+        @media (max-width: 768px) {
+            .creation-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            .budget-selector {
+                width: 100%;
+            }
+            .budget-btn {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+            }
+            .add-btn {
+                justify-content: center;
+                width: 100%;
+            }
+            .activity-creation {
+                padding: 1rem;
+            }
+        }
+
         .budget-selector {
           display: flex;
           gap: 1rem;

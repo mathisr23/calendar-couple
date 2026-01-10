@@ -117,11 +117,21 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
         @media (max-width: 768px) {
             .header-container {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center; /* Center items */
+                gap: 1.5rem;
+            }
+            .title-block {
+                flex-direction: column;
+                text-align: center;
+            }
+            .main-title {
+                font-size: 2.5rem; /* Smaller title */
             }
             .header-actions {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: center; /* Center actions */
+                flex-wrap: wrap;
+                gap: 1rem;
             }
         }
       `}</style>

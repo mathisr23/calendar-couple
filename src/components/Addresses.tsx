@@ -162,6 +162,48 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           text-shadow: 4px 4px 0px var(--retro-pink);
           margin-bottom: 0.5rem;
         }
+
+        @media (max-width: 768px) {
+            .title-retro {
+                font-size: 2rem;
+            }
+            .content-card {
+                padding: 1.5rem;
+            }
+            .address-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .ratings-section {
+                width: 100%;
+                justify-content: space-between;
+                gap: 1rem;
+            }
+            .place-info {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .check-btn {
+                order: -1; 
+            }
+            .delete-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+            .address-item {
+                position: relative;
+            }
+            .add-place-form {
+                flex-direction: column;
+            }
+            .add-btn {
+                width: 100%;
+            }
+        }
         .tabs-container {
           display: flex;
           gap: 0.5rem;

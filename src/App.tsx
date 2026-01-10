@@ -158,7 +158,7 @@ function AppContent() {
     const newItem: BucketIdea = { id: tempId, text, completed: false };
     setBucketList([...bucketList, newItem]);
 
-    const { data, error } = await supabase.from('bucket_list_items').insert({
+    const { data } = await supabase.from('bucket_list_items').insert({
       couple_id: profile.couple_id,
       text,
       completed: false
@@ -298,8 +298,18 @@ function AppContent() {
           display: flex;
           gap: 8px;
           padding-left: 12px;
-          margin-bottom: -2px; /* Overlap with window border */
+          margin-bottom: -2px;
           z-index: 10;
+          overflow-x: auto; /* Scrollable tabs */
+          -webkit-overflow-scrolling: touch;
+          white-space: nowrap;
+          padding-bottom: 0; /* Removing padding that might hide scrollbar if we hide it elsewhere */
+          /* Hide scrollbar */
+          scrollbar-width: none; 
+          -ms-overflow-style: none;
+        }
+        .retro-tabs::-webkit-scrollbar {
+          display: none;
         }
         
         .retro-tab {
@@ -314,13 +324,14 @@ function AppContent() {
           top: 0;
           transition: top 0.2s;
           border-radius: 4px 4px 0 0;
+          flex-shrink: 0; /* Prevent shrinking */
         }
         
         .retro-tab.active {
           background: var(--retro-yellow); 
           color: var(--retro-dark);
           z-index: 12;
-          padding-bottom: 10px; /* Hide border of container */
+          padding-bottom: 10px;
           box-shadow: 0 -4px 0 rgba(0,0,0,0.1);
         }
 
@@ -335,7 +346,7 @@ function AppContent() {
           padding: 2rem;
           position: relative;
           z-index: 1;
-          border-radius: 4px; /* Ensure generic card style is applied */
+          border-radius: 4px;
         }
         
         /* Tweaks to internal layout */
@@ -357,12 +368,21 @@ function AppContent() {
           flex-direction: column;
           gap: 2rem;
         }
+        
         @media (max-width: 1024px) {
           .bottom-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr; /* Force single column */
+            gap: 1.5rem;
           }
-          .retro-tabs {
-             flex-wrap: wrap; 
+          .full-width-column {
+            grid-column: 1;
+          }
+          .retro-window-content {
+            padding: 1rem; /* Reduce padding */
+          }
+          .retro-tab {
+             font-size: 1rem;
+             padding: 8px 16px;
           }
         }
       `}</style>
