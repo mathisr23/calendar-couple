@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { Zap, Trophy, Play } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import type { ActivityIdea, Budget } from '../types';
 
 interface ActivitiesWheelProps {
