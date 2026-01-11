@@ -90,11 +90,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (!url || !key) throw new Error("Missing Supabase URL/Key");
 
+            // Added 'Accept' header to fix 406 error
             const res = await fetch(`${url}/rest/v1/profiles?id=eq.${userId}&select=*`, {
                 headers: {
                     'apikey': key,
                     'Authorization': `Bearer ${key}`, // FORCE ANON KEY
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             });
 

@@ -17,6 +17,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           padding: 2rem;
           margin: 0 auto;
         }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
         .app-layout {
           display: grid;
           grid-template-columns: 1fr 340px;

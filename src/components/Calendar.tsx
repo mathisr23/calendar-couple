@@ -134,6 +134,11 @@ export const Calendar: React.FC<CalendarProps> = ({
           width: 100%;
           max-width: 600px;
         }
+        @media (max-width: 640px) {
+            .calendar-container {
+                padding: 1rem;
+            }
+        }
         .calendar-header {
           display: flex;
           justify-content: space-between;
@@ -142,11 +147,16 @@ export const Calendar: React.FC<CalendarProps> = ({
           border-bottom: 2px solid var(--retro-dark);
           padding-bottom: 1rem;
         }
+        .month-display {
+          flex: 1;
+          text-align: center;
+        }
         .month-display h2 {
           font-size: 2rem;
           font-family: var(--font-display);
           color: var(--retro-dark);
           text-transform: uppercase;
+          margin: 0;
         }
         .nav-btn {
           padding: 4px;

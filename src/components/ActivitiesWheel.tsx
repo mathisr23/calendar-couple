@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Dice5 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { Zap, Trophy, Play } from 'lucide-react';
 import type { ActivityIdea, Budget } from '../types';
 
 interface ActivitiesWheelProps {
@@ -11,292 +11,326 @@ export const ActivitiesWheel: React.FC<ActivitiesWheelProps> = ({ activities }) 
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<ActivityIdea | null>(null);
   const [wheelBudget, setWheelBudget] = useState<Budget>('low');
+  const controls = useAnimation();
 
-  const spin = () => {
+  // Create a "reel" of items
+  const filteredActivities = activities.filter(a => a.budget === wheelBudget);
+
+  // Create a long list of items for the spinning effect
+  const slots = useMemo(() => {
+    if (filteredActivities.length === 0) return [];
+    let items = [...filteredActivities];
+    // Repeat to ensure long scroll (at least 50 items)
+    while (items.length < 50) {
+      items = [...items, ...filteredActivities];
+    }
+    return items;
+  }, [filteredActivities]);
+
+  const ITEM_HEIGHT = 60; // Height of each item in the slot machine
+
+  const spin = async () => {
     if (isSpinning) return;
-
-    setResult(null);
-    setIsSpinning(true);
-
-    const filtered = activities.filter(a => a.budget === wheelBudget);
-
-    if (filtered.length === 0) {
-      setTimeout(() => {
-        setIsSpinning(false);
-        setResult({ id: 'none', title: 'Aucune idée pour ce budget !', authorId: 'mathis', budget: wheelBudget });
-      }, 1500);
+    if (filteredActivities.length === 0) {
+      // Handle empty state animation or feedback
       return;
     }
 
-    // Animation delay
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * filtered.length);
-      setResult(filtered[randomIndex]);
-      setIsSpinning(false);
-    }, 2000);
+    setIsSpinning(true);
+    setResult(null);
+
+    // Reset to top to start fresh
+    await controls.set({ y: 0 });
+
+    const totalItems = slots.length;
+    // Pick a random winner from the second half to ensure good spin duration
+    const minScroll = 30;
+    const maxScroll = totalItems - 10;
+    const targetIndex = Math.floor(Math.random() * (maxScroll - minScroll + 1)) + minScroll;
+    const winner = slots[targetIndex];
+
+    const targetY = -1 * (targetIndex * ITEM_HEIGHT);
+
+    // The spin animation
+    await controls.start({
+      y: targetY,
+      transition: {
+        duration: 2.5,
+        ease: [0.15, 0.85, 0.35, 1], // Custom bezier for "mechanical" feel
+        type: "tween"
+      }
+    });
+
+    setResult(winner);
+    setIsSpinning(false);
   };
 
   return (
-    <div className="wheel-container glass">
-      <div className="wheel-header">
-        <h2 className="big-pate-title">LOTERIE!</h2>
-        <p>Laisse le destin choisir ta prochaine sortie</p>
+    <div className="slot-machine-container">
+      <div className="machine-header">
+        <h2 className="machine-title">LE_DESTIN.EXE</h2>
       </div>
 
-      <div className="budget-toggle-wheel">
-        <button
-          className={`toggle-btn ${wheelBudget === 'low' ? 'active' : ''}`}
-          onClick={() => setWheelBudget('low')}
-        >
-          Petit Budget
-        </button>
-        <button
-          className={`toggle-btn ${wheelBudget === 'high' ? 'active' : ''}`}
-          onClick={() => setWheelBudget('high')}
-        >
-          Grand Budget
-        </button>
-      </div>
+      <div className="machine-body">
+        <div className="budget-toggles">
+          <button
+            className={`toggle-btn ${wheelBudget === 'low' ? 'active' : ''}`}
+            onClick={() => !isSpinning && setWheelBudget('low')}
+            disabled={isSpinning}
+          >
+            €
+          </button>
+          <button
+            className={`toggle-btn ${wheelBudget === 'high' ? 'active' : ''}`}
+            onClick={() => !isSpinning && setWheelBudget('high')}
+            disabled={isSpinning}
+          >
+            €€€
+          </button>
+        </div>
 
-      <div className="jar-display">
-        <motion.div
-          className="jar-wrapper"
-          animate={isSpinning ? {
-            rotate: [0, -5, 5, -5, 5, 0],
-            x: [0, -2, 2, -2, 2, 0],
-            scale: [1, 1.05, 0.95, 1.05, 1]
-          } : {}}
-          transition={{
-            duration: 0.5,
-            repeat: isSpinning ? Infinity : 0,
-            ease: "easeInOut"
-          }}
-        >
-          <div className="jar">
-            <div className="jar-lid"></div>
-            <div className="jar-body">
-              <div className="jar-content">
-                {activities.slice(0, 10).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="paper-strip"
-                    animate={isSpinning ? {
-                      y: [0, -20, 0],
-                      rotate: [0, 360]
-                    } : {}}
-                    transition={{ duration: 1, repeat: Infinity, delay: i * 0.1 }}
-                  />
-                ))}
-              </div>
-              <div className="jar-label">LOTERIE!</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <AnimatePresence>
-          {result && (
-            <motion.div
-              className="result-card"
-              initial={{ scale: 0, y: 50, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0, y: 50, opacity: 0 }}
-            >
-              <div className="result-content">
-                <Sparkles className="sparkle-icon" />
-                <h3>{result.title}</h3>
-                {result.id !== 'none' && (
-                  <p>Suggéré par {result.authorId === 'mathis' ? 'Mathis' : 'Léa'}</p>
-                )}
-              </div>
-            </motion.div>
+        <div className="reel-window">
+          {filteredActivities.length === 0 ? (
+            <div className="empty-message-reel">PAS DE DONNEES...</div>
+          ) : (
+            <div className="reel-overlay"></div>
           )}
-        </AnimatePresence>
+
+          <motion.div
+            className="reel-strip"
+            animate={controls}
+            initial={{ y: 0 }}
+          >
+            {slots.map((activity, index) => (
+              <div key={`${activity.id}-${index}`} className="reel-item" style={{ height: ITEM_HEIGHT }}>
+                <span className="item-text">{activity.title}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Center Line Indicator */}
+          <div className="center-line"></div>
+        </div>
+
+        <button
+          className={`lever-btn ${isSpinning ? 'spinning' : ''}`}
+          onClick={spin}
+          disabled={isSpinning || filteredActivities.length === 0}
+        >
+          {isSpinning ? '...' : 'LANCER'}
+        </button>
       </div>
 
-      <button
-        className={`spin-btn ${isSpinning ? 'spinning' : ''}`}
-        onClick={spin}
-        disabled={isSpinning}
-      >
-        {isSpinning ? 'On pioche...' : <><Dice5 size={24} /> Tirer au sort</>}
-      </button>
+      <div className="result-display">
+        {result && !isSpinning && (
+          <motion.div
+            className="winner-card"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <Trophy size={24} color="var(--retro-yellow)" />
+            <div className="winner-info">
+              <h3>{result.title}</h3>
+              <span>Proposé par {result.authorId === 'partner' ? 'Léa' : 'Mathis'}</span>
+            </div>
+          </motion.div>
+        )}
+      </div>
 
       <style>{`
-        .wheel-container {
-          padding: 3rem;
-          background: white;
-          border-radius: 32px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 2rem;
-          text-align: center;
-          box-shadow: 0 20px 60px rgba(32, 63, 154, 0.08);
-        }
-
-        .big-pate-title {
-          font-family: 'Outfit', sans-serif;
-          font-weight: 900;
-          font-size: 3rem;
-          color: var(--palette-orange);
-          letter-spacing: -0.05em;
-          margin-bottom: 0.5rem;
-        }
-
-        .wheel-header p {
-          color: var(--color-grey-blue);
-          font-weight: 500;
-        }
-
-        .budget-toggle-wheel {
-          display: flex;
-          gap: 1rem;
-          background: var(--color-beige);
-          padding: 6px;
-          border-radius: 16px;
-        }
-
-        .budget-toggle-wheel .toggle-btn {
-          padding: 0.75rem 1.5rem;
-          border-radius: 12px;
-          font-weight: 800;
-          color: var(--color-grey-blue);
-          transition: var(--transition-smooth);
-        }
-
-        .budget-toggle-wheel .toggle-btn.active {
-          background: white;
-          color: var(--palette-orange);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .jar-display {
-          position: relative;
-          height: 300px;
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .jar-wrapper {
-          position: relative;
-          z-index: 10;
-        }
-
-        .jar {
-          width: 140px;
-          height: 180px;
-          position: relative;
-        }
-
-        .jar-lid {
-          width: 100px;
-          height: 20px;
-          background: var(--color-grey-blue);
-          border-radius: 10px 10px 0 0;
-          margin: 0 auto;
-        }
-
-        .jar-body {
-          width: 140px;
-          height: 160px;
-          background: rgba(255, 255, 255, 0.4);
-          border: 4px solid var(--color-primary-blue);
-          border-radius: 20px 20px 40px 40px;
-          position: relative;
-          overflow: hidden;
-          backdrop-filter: blur(4px);
-        }
-
-        .jar-content {
-          position: absolute;
-          bottom: 10px;
-          left: 0;
-          right: 0;
-          height: 80%;
-          display: flex;
-          flex-wrap: wrap;
-          padding: 10px;
-          gap: 5px;
-          justify-content: center;
-        }
-
-        .paper-strip {
-          width: 30px;
-          height: 15px;
-          background: var(--color-beige);
-          border: 1px solid var(--color-pastel-blue);
-          border-radius: 4px;
-        }
-
-        .jar-label {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) rotate(-5deg);
-          background: white;
-          padding: 4px 10px;
-          border: 2px solid var(--color-primary-blue);
-          font-weight: 900;
-          font-size: 0.8rem;
-          color: var(--color-primary-blue);
-          white-space: nowrap;
-        }
-
-        .result-card {
-          position: absolute;
-          top: -20px;
-          z-index: 20;
-          background: white;
+        .slot-machine-container {
+          background: var(--retro-dark);
           padding: 2rem;
-          border-radius: 24px;
-          box-shadow: 0 15px 50px rgba(32, 63, 154, 0.15);
-          border: 2px solid var(--color-primary-blue);
-          max-width: 300px;
-        }
-
-        .result-content h3 {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: var(--color-primary-blue);
-          margin-bottom: 0.5rem;
-        }
-
-        .result-content p {
-          font-size: 0.875rem;
-          color: var(--color-grey-blue);
-          font-weight: 600;
-        }
-
-        .sparkle-icon {
-          color: #FFB703;
-          margin-bottom: 1rem;
-          width: 32px;
-          height: 32px;
-        }
-
-        .spin-btn {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          background: var(--color-primary-pink);
+          border-radius: 8px;
+          border: 4px solid var(--retro-dark);
+          box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
+          max-width: 500px;
+          margin: 0 auto;
           color: white;
-          padding: 1.25rem 3rem;
-          border-radius: 20px;
-          font-weight: 900;
-          font-size: 1.25rem;
-          transition: var(--transition-smooth);
+          font-family: var(--font-display);
         }
 
-        .spin-btn:hover:not(:disabled) {
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 8px 25px rgba(232, 71, 151, 0.3);
+        .machine-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px dashed #444;
+            padding-bottom: 0.5rem;
         }
 
-        .spin-btn.spinning {
-          background: var(--color-grey-blue);
-          cursor: wait;
+        .machine-title {
+            color: var(--retro-green);
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(228, 249, 136, 0.4);
+        }
+
+        .machine-body {
+            background: #333;
+            padding: 1.5rem;
+            border-radius: 4px;
+            border: 2px solid #555;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .budget-toggles {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            background: #222;
+            color: #666;
+            border: 2px solid #444;
+            padding: 8px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: var(--retro-blue);
+            color: var(--retro-dark);
+            border-color: var(--retro-blue);
+            box-shadow: 0 0 10px var(--retro-blue);
+        }
+
+        .reel-window {
+            width: 100%;
+            height: 180px; /* 3 items visible, centered on middle */
+            background: white;
+            border: 4px solid var(--retro-dark);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .reel-strip {
+            width: 100%;
+            position: absolute;
+            top: 60px; /* Start with first item in middle (offset by 1 item height) - actually we set initial y=0 which means top. We just need to scroll correctly. */
+             /* Let's align the strip so the first item is centered. 
+                Height is 180. Item is 60. Center is 60-120.
+                If strip y=0, first item (index 0) is at 0-60.
+                To center index 0, we need y = 60.
+             */
+             top: 60px; 
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+        }
+
+        .reel-item {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px dashed #eee;
+            color: var(--retro-dark);
+        }
+
+        .item-text {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 1rem;
+        }
+
+        .center-line {
+            position: absolute;
+            top: 50%;
+            left: -10%;
+            right: -10%;
+            height: 4px;
+            background: rgba(255, 0, 0, 0.5);
+            transform: translateY(-50%);
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 0 5px red;
+        }
+        
+        .reel-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.4) 100%);
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .empty-message-reel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #999;
+            width: 100%;
+            text-align: center;
+        }
+
+        .lever-btn {
+            background: var(--retro-pink);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 0 #D45079;
+            transition: all 0.1s;
+        }
+
+        .lever-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #D45079;
+        }
+        
+        .lever-btn:disabled {
+            background: #555;
+            box-shadow: 0 6px 0 #333;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-display {
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .winner-card {
+            background: #444;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            border: 2px solid var(--retro-yellow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 0 15px rgba(252, 246, 189, 0.2);
+        }
+
+        .winner-info h3 {
+            color: var(--retro-yellow);
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        
+        .winner-info span {
+            color: #aaa;
+            font-size: 0.9rem;
         }
       `}</style>
     </div>

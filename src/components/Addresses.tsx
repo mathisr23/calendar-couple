@@ -177,8 +177,9 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
             }
             .ratings-section {
                 width: 100%;
-                justify-content: space-between;
-                gap: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
             }
             .place-info {
                 width: 100%;

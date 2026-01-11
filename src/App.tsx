@@ -315,7 +315,7 @@ function AppContent() {
         .retro-tab {
           background: #FFF;
           border: var(--retro-border);
-          border-bottom: none;
+          /* border-bottom kept */
           padding: 8px 24px;
           font-family: var(--font-display);
           font-size: 1.25rem;
@@ -325,6 +325,7 @@ function AppContent() {
           transition: top 0.2s;
           border-radius: 4px 4px 0 0;
           flex-shrink: 0; /* Prevent shrinking */
+          margin-bottom: 0; /* Ensure it sits nicely */
         }
         
         .retro-tab.active {
@@ -378,11 +379,18 @@ function AppContent() {
             grid-column: 1;
           }
           .retro-window-content {
-            padding: 1rem; /* Reduce padding */
+            padding: 1rem 0.5rem; /* Reduce side padding more */
+          }
+          .retro-tabs {
+             justify-content: center; /* Center tabs on mobile */
+             padding-left: 0;
           }
           .retro-tab {
-             font-size: 1rem;
-             padding: 8px 16px;
+             font-size: 0.9rem;
+             padding: 8px 12px;
+             flex: 1; /* Distribute space evenly */
+             display: flex;
+             justify-content: center;
           }
         }
       `}</style>
