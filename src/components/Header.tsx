@@ -13,7 +13,7 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
     <header className="header-container">
       <div className="title-block">
         <div className="retro-icon">
-          <Heart size={32} fill="var(--retro-pink)" stroke="var(--retro-dark)" strokeWidth={3} />
+          <Heart size={32} fill="var(--retro-pink)" stroke="var(--retro-dark)" strokeWidth={3} className="heart-icon" />
         </div>
         <div>
           <span className="subtitle">SYSTEM_ROOT: LOVE_PROTOCOL</span>
@@ -132,6 +132,35 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
                 justify-content: center; /* Center actions */
                 flex-wrap: wrap;
                 gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header-container {
+                padding: 1rem 0;
+                margin-bottom: 1.5rem;
+            }
+            .main-title {
+                font-size: 2rem; /* Even smaller for very small screens */
+                text-shadow: 2px 2px 0px var(--retro-blue);
+            }
+            .subtitle {
+                font-size: 0.65rem;
+            }
+            .retro-icon {
+                padding: 6px;
+            }
+            .heart-icon {
+                width: 24px;
+                height: 24px;
+            }
+            .retro-badge {
+                font-size: 0.8rem;
+                padding: 4px 6px;
+            }
+            .logout-btn {
+                font-size: 0.9rem;
+                padding: 8px 12px;
             }
         }
       `}</style>

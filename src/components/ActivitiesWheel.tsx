@@ -5,9 +5,12 @@ import type { ActivityIdea, Budget } from '../types';
 
 interface ActivitiesWheelProps {
   activities: ActivityIdea[];
+  currentUserId: string;
+  userName: string;
+  partnerName: string;
 }
 
-export const ActivitiesWheel: React.FC<ActivitiesWheelProps> = ({ activities }) => {
+export const ActivitiesWheel: React.FC<ActivitiesWheelProps> = ({ activities, currentUserId, userName, partnerName }) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<ActivityIdea | null>(null);
   const [wheelBudget, setWheelBudget] = useState<Budget>('low');
@@ -131,7 +134,7 @@ export const ActivitiesWheel: React.FC<ActivitiesWheelProps> = ({ activities }) 
             <Trophy size={24} color="var(--retro-yellow)" />
             <div className="winner-info">
               <h3>{result.title}</h3>
-              <span>Proposé par {result.authorId === 'partner' ? 'Léa' : 'Mathis'}</span>
+              <span>Proposé par {result.authorId === currentUserId ? userName : partnerName}</span>
             </div>
           </motion.div>
         )}

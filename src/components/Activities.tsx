@@ -111,7 +111,12 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, onAdd, onDel
       </div>
 
       <div className="wheel-section">
-        <ActivitiesWheel activities={activities} />
+        <ActivitiesWheel
+          activities={activities}
+          currentUserId={currentUserId}
+          userName={userName}
+          partnerName={partnerName}
+        />
       </div>
 
       <style>{`

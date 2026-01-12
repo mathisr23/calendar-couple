@@ -139,6 +139,35 @@ export const Calendar: React.FC<CalendarProps> = ({
                 padding: 1rem;
             }
         }
+        
+        @media (max-width: 400px) {
+            .calendar-container {
+                padding: 0.5rem;
+            }
+            .calendar-header {
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+            }
+            .month-display h2 {
+                font-size: 1.5rem;
+            }
+            .nav-btn {
+                padding: 2px;
+            }
+            .weekday-label {
+                font-size: 1rem;
+            }
+            .day-number {
+                font-size: 1rem;
+            }
+            .calendar-grid {
+                gap: 2px;
+                padding: 2px;
+            }
+            .calendar-day {
+                padding: 2px;
+            }
+        }
         .calendar-header {
           display: flex;
           justify-content: space-between;

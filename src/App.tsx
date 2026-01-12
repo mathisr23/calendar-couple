@@ -393,6 +393,19 @@ function AppContent() {
              justify-content: center;
           }
         }
+        
+        @media (max-width: 400px) {
+          .retro-window-content {
+            padding: 0.75rem 0.25rem;
+          }
+          .retro-tab {
+            font-size: 0.8rem;
+            padding: 6px 8px;
+          }
+          .main-content {
+            padding-bottom: 3rem;
+          }
+        }
       `}</style>
     </Layout>
   );
