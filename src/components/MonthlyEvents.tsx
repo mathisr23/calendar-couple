@@ -57,13 +57,13 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
   const formatEventDate = (event: PlannedDate) => {
     const start = new Date(event.date);
     if (!event.endDate || isSameDay(start, new Date(event.endDate))) {
-      return format(start, 'do', { locale: fr });
+      return format(start, 'dd/MM', { locale: fr });
     }
     const end = new Date(event.endDate);
     if (isSameMonth(start, end)) {
-      return `${format(start, 'do', { locale: fr })} - ${format(end, 'do', { locale: fr })}`;
+      return `${format(start, 'dd/MM', { locale: fr })} - ${format(end, 'dd/MM', { locale: fr })}`;
     }
-    return `${format(start, 'do MMM', { locale: fr })} - ${format(end, 'do MMM', { locale: fr })}`;
+    return `${format(start, 'dd/MM', { locale: fr })} - ${format(end, 'dd/MM', { locale: fr })}`;
   };
 
   return (
@@ -124,7 +124,7 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
               </div>
 
               <div className="color-picker-mini">
-                <label>CODE COULEUR</label>
+                <label>CODE_COULEUR</label>
                 <div className="colors-row">
                   {COLORS.map(c => (
                     <button
@@ -209,6 +209,7 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
           background: #eee;
           padding: 1rem;
           border: 1px dashed var(--retro-dark);
+          border-radius: 4px;
           display: flex;
           flex-direction: column;
           gap: 1rem;
@@ -235,12 +236,14 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
           gap: 0.5rem;
           padding: 4px;
           border: 1px solid #ccc;
+          border-radius: 4px;
           background: #fff;
         }
         .color-dot {
           width: 20px;
           height: 20px;
           border: 1px solid #000;
+          border-radius: 4px;
           cursor: pointer;
         }
         .color-dot.active {
@@ -266,6 +269,7 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
           gap: 0.75rem;
           padding: 8px;
           border: 1px solid #ddd;
+          border-radius: 4px;
           background: #f9f9f9;
         }
         .event-item:hover {
@@ -282,6 +286,7 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
           font-weight: 700;
           padding: 2px 4px;
           border: 1px solid #000;
+          border-radius: 4px;
           color: #000;
         }
         .event-title {
@@ -298,6 +303,39 @@ export const MonthlyEvents: React.FC<MonthlyEventsProps> = ({ currentMonth, plan
         .delete-event-btn:hover {
             opacity: 1;
             color: var(--retro-pink);
+        }
+        
+        @media (max-width: 768px) {
+          .content-area {
+            padding: 1rem;
+          }
+          .add-event-form {
+            padding: 0.75rem;
+          }
+          .form-row {
+            flex-direction: column;
+            gap: 0.75rem;
+          }
+          .form-group label {
+            font-size: 0.9rem;
+          }
+          .colors-row {
+            flex-wrap: wrap;
+          }
+          .color-dot {
+            width: 28px;
+            height: 28px;
+          }
+          .event-item {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+          }
+          .event-date {
+            font-size: 0.95rem;
+          }
+          .event-title {
+            font-size: 0.85rem;
+          }
         }
       `}</style>
     </div>

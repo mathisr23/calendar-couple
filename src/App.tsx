@@ -122,7 +122,11 @@ function AppContent() {
 
     await supabase.from('addresses').insert({
       couple_id: profile.couple_id,
-      name, category
+      name,
+      category,
+      rating1: null,
+      rating2: null,
+      completed: false
     });
   };
 

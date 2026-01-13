@@ -85,8 +85,7 @@ textarea {
   border: var(--retro-border);
   color: var(--text-main);
   padding: 12px;
-  border-radius: 0;
-  /* Brutalist */
+  border-radius: 4px;
   outline: none;
   box-shadow: var(--retro-shadow);
   transition: var(--transition-smooth);

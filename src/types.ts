@@ -18,7 +18,7 @@ export interface BucketIdea {
     completed: boolean;
 }
 
-export type AddressCategory = 'restaurants' | 'douceurs';
+export type AddressCategory = 'restaurants' | 'pastries';
 
 export interface Address {
     id: string;

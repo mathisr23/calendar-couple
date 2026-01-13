@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
           <Heart size={32} fill="var(--retro-pink)" stroke="var(--retro-dark)" strokeWidth={3} className="heart-icon" />
         </div>
         <div>
-          <span className="subtitle">SYSTEM_ROOT: LOVE_PROTOCOL</span>
+          <span className="subtitle">RACINE_SYSTEME: PROTOCOLE_AMOUR</span>
           <h1 className="main-title">DATE_2026</h1>
         </div>
       </div>
@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
         )}
 
         <button onClick={signOut} className="retro-btn logout-btn" aria-label="Se déconnecter">
-          <LogOut size={18} /> QUIT
+          <LogOut size={18} /> QUITTER
         </button>
       </div>
 

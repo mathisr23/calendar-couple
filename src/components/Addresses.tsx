@@ -25,7 +25,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
 
   const categories: { id: AddressCategory; icon: any; label: string }[] = [
     { id: 'restaurants', icon: Utensils, label: 'RESTAURANTS' },
-    { id: 'douceurs', icon: Coffee, label: 'DOUCEURS' },
+    { id: 'pastries', icon: Coffee, label: 'DOUCEURS' },
   ];
 
   const filteredAddresses = addresses.filter(a => a.category === activeCategory);
@@ -65,7 +65,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
         <form className="add-place-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder={`Nouveau ${categories.find(c => c.id === activeCategory)?.label}...`}
+            placeholder={activeCategory === 'restaurants' ? 'Nouveau restaurant...' : 'Nouvelle douceur...'}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
@@ -111,6 +111,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                       <RatingSelector
                         value={addr.rating1}
                         onChange={(val) => onUpdate(addr.id, { rating1: val })}
+                        disabled={false}
                       />
                     </div>
                     <div className="user-rating">
@@ -118,6 +119,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                       <RatingSelector
                         value={addr.rating2}
                         onChange={(val) => onUpdate(addr.id, { rating2: val })}
+                        disabled={true}
                       />
                     </div>
 
@@ -267,6 +269,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           padding: 1rem;
           background: white;
           border: 1px solid var(--retro-dark);
+          border-radius: 4px;
           box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
         }
         .address-item:hover {
@@ -313,6 +316,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           min-width: 60px;
           padding: 4px;
           border: 2px solid var(--retro-dark);
+          border-radius: 4px;
           background: var(--retro-yellow);
         }
         .score-label {
@@ -349,7 +353,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
 
 const RatingSelector: React.FC<{
   value: number | null;
-  onChange: (val: number) => void;
+  onChange: (val: number | null) => void;
   disabled?: boolean;
 }> = ({ value, onChange, disabled }) => {
   return (
@@ -358,7 +362,7 @@ const RatingSelector: React.FC<{
         <button
           key={i}
           className={`rate-box ${value === i ? 'active' : ''}`}
-          onClick={() => !disabled && onChange(i)}
+          onClick={() => !disabled && onChange(value === i ? null : i)}
           disabled={disabled}
         >
           {i}
@@ -379,6 +383,7 @@ const RatingSelector: React.FC<{
           justify-content: center;
           background: #FFF;
           border: 1px solid var(--retro-dark);
+          border-radius: 4px;
           cursor: pointer;
         }
         .rate-box:hover:not(:disabled) {

@@ -106,6 +106,7 @@ export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, onAdd, onDelete, on
           padding: 0.75rem;
           background: white;
           border: 1px solid var(--retro-dark);
+          border-radius: 4px;
           box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
           cursor: pointer;
         }
@@ -122,6 +123,7 @@ export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, onAdd, onDelete, on
           width: 18px;
           height: 18px;
           border: 2px solid var(--retro-dark);
+          border-radius: 4px;
           transition: var(--transition-smooth);
         }
         .checkbox.checked {
@@ -145,6 +147,31 @@ export const DateIdeas: React.FC<DateIdeasProps> = ({ ideas, onAdd, onDelete, on
         .delete-btn:hover {
           color: var(--retro-pink);
           opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+          .ideas-content {
+            padding: 1rem;
+          }
+          .add-idea-form {
+            flex-direction: column;
+            gap: 0.75rem;
+          }
+          .add-btn {
+            width: 100%;
+            height: 48px;
+          }
+          .checkbox {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+          }
+          .idea-item {
+            padding: 1rem;
+          }
+          .idea-content {
+            gap: 0.75rem;
+          }
         }
       `}</style>
     </div>
