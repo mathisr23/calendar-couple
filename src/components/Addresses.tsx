@@ -10,14 +10,20 @@ interface AddressesProps {
   onUpdate: (id: string, updates: Partial<Address>) => void;
   onDelete: (id: string) => void;
   partnerName: string;
+  partnerId?: string;
   userName: string;
 }
 
-export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate, onDelete, partnerName, userName }) => {
+export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, onAdd, onUpdate, onDelete, partnerName, partnerId, userName }) => {
   const [activeCategory, setActiveCategory] = useState<AddressCategory>(() => {
     return (localStorage.getItem('activeAddressCategory') as any) || 'restaurants';
   });
   const [newName, setNewName] = useState('');
+
+  // Determine which rating slot belongs to the current user
+  // If currentUser ID is alphabetically smaller than partnerId, they are "Rating 1".
+  // Otherwise, they are "Rating 2".
+  const isUser1 = partnerId ? currentUser < partnerId : true;
 
   React.useEffect(() => {
     localStorage.setItem('activeAddressCategory', activeCategory);
@@ -85,61 +91,66 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
                 Aucune donnée dans le répertoire /{activeCategory}.
               </motion.p>
             ) : (
-              filteredAddresses.map((addr) => (
-                <motion.div
-                  key={addr.id}
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`address-item ${addr.completed ? 'completed' : ''}`}
-                >
-                  <button
-                    className="check-btn"
-                    onClick={() => onUpdate(addr.id, { completed: !addr.completed })}
+              filteredAddresses.map((addr) => {
+                const myRating = isUser1 ? addr.rating1 : addr.rating2;
+                const partnerRating = isUser1 ? addr.rating2 : addr.rating1;
+
+                return (
+                  <motion.div
+                    key={addr.id}
+                    layout
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className={`address-item ${addr.completed ? 'completed' : ''}`}
                   >
-                    {addr.completed ? <CheckCircle size={24} color="var(--retro-green)" /> : <Circle size={24} />}
-                  </button>
-
-                  <div className="place-info">
-                    <span className="place-name">{addr.name}</span>
-                  </div>
-
-                  <div className="ratings-section">
-                    <div className="user-rating">
-                      <span className="user-label">{userName}</span>
-                      <RatingSelector
-                        value={addr.rating1}
-                        onChange={(val) => onUpdate(addr.id, { rating1: val })}
-                        disabled={false}
-                      />
-                    </div>
-                    <div className="user-rating">
-                      <span className="user-label">{partnerName}</span>
-                      <RatingSelector
-                        value={addr.rating2}
-                        onChange={(val) => onUpdate(addr.id, { rating2: val })}
-                        disabled={true}
-                      />
-                    </div>
-
-                    <div className="total-score">
-                      <span className="score-label">TOTAL</span>
-                      <div className="score-value">
-                        {calculateTotal(addr.rating1, addr.rating2) !== null ? (
-                          <span className="sum">{calculateTotal(addr.rating1, addr.rating2)}</span>
-                        ) : (
-                          <span className="waiting">--</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <button className="delete-btn" onClick={() => onDelete(addr.id)}>
-                      <Trash2 size={16} />
+                    <button
+                      className="check-btn"
+                      onClick={() => onUpdate(addr.id, { completed: !addr.completed })}
+                    >
+                      {addr.completed ? <CheckCircle size={24} color="var(--retro-green)" /> : <Circle size={24} />}
                     </button>
-                  </div>
-                </motion.div>
-              ))
+
+                    <div className="place-info">
+                      <span className="place-name">{addr.name}</span>
+                    </div>
+
+                    <div className="ratings-section">
+                      <div className="user-rating">
+                        <span className="user-label">{userName}</span>
+                        <RatingSelector
+                          value={myRating}
+                          onChange={(val) => onUpdate(addr.id, { [isUser1 ? 'rating1' : 'rating2']: val })}
+                          disabled={false}
+                        />
+                      </div>
+                      <div className="user-rating">
+                        <span className="user-label">{partnerName}</span>
+                        <RatingSelector
+                          value={partnerRating}
+                          onChange={() => { }}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="total-score">
+                        <span className="score-label">TOTAL</span>
+                        <div className="score-value">
+                          {calculateTotal(addr.rating1, addr.rating2) !== null ? (
+                            <span className="sum">{calculateTotal(addr.rating1, addr.rating2)}</span>
+                          ) : (
+                            <span className="waiting">--</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <button className="delete-btn" onClick={() => onDelete(addr.id)}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })
             )}
           </AnimatePresence>
         </div>
@@ -264,9 +275,12 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
         }
         .address-item {
           display: flex;
-          align-items: center;
-          gap: 1.5rem;
-          padding: 1rem;
+          flex-wrap: wrap; /* Allow wrapping */
+          align-items: flex-start; /* Top align when wrapped */
+          justify-content: space-between; /* Spread content */
+          gap: 1rem;
+          padding: 1rem 5rem 1rem 1rem;
+          position: relative;
           background: white;
           border: 1px solid var(--retro-dark);
           border-radius: 4px;
@@ -284,36 +298,58 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
         .address-item.completed .place-name {
           text-decoration: line-through;
         }
+        /* Check button container */
+        .check-btn {
+            flex-shrink: 0;
+            margin-top: 4px; /* Align with text */
+        }
         .place-info {
-          flex: 1;
+          /* Force wrap sooner: large basis */
+          flex: 1 1 400px; 
+          min-width: 300px; 
+          margin-top: 6px; 
+          margin-right: 1rem;
         }
         .place-name {
           font-family: var(--font-main);
           font-weight: 700;
           font-size: 1.125rem;
           text-transform: uppercase;
+          word-break: break-word; 
+          line-height: 1.4;
         }
         .ratings-section {
           display: flex;
-          align-items: center;
-          gap: 2rem;
+          align-items: flex-start;
+          gap: 1.5rem;
+          flex-shrink: 0;
+          margin-top: 2px;
+          /* If wrapped, ensure it has some top margin if needed, though gap handles most */
+          margin-left: auto; /* Push to right on large screens */
         }
         .user-rating {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.25rem;
+          gap: 0.5rem;
+          min-width: 150px; /* Increased from 140px fixed */
+          flex-shrink: 0;
         }
         .user-label {
           font-family: var(--font-display);
           font-size: 1rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
         }
         .total-score {
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 0.25rem;
-          min-width: 60px;
+          min-width: 70px; /* Increased from 60px */
+          flex-shrink: 0;
           padding: 4px;
           border: 2px solid var(--retro-dark);
           border-radius: 4px;
@@ -327,14 +363,24 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, onAdd, onUpdate
           font-family: var(--font-display);
           font-weight: 400;
           font-size: 1.5rem;
+          line-height: 1;
         }
         .waiting {
           font-family: var(--font-display);
           font-size: 1rem;
+          line-height: 1.5;
         }
         .delete-btn {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
           color: var(--text-muted);
-          padding: 0.5rem;
+          width: 44px;
+          height: 44px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           transition: all 0.2s;
         }
         .delete-btn:hover {

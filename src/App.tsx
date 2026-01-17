@@ -29,7 +29,7 @@ function AppContent() {
   const [addresses, setAddresses] = useState<Address[]>([]);
 
   // Couple Data
-  const [partnerProfile, setPartnerProfile] = useState<{ full_name: string } | null>(null);
+  const [partnerProfile, setPartnerProfile] = useState<{ id: string; full_name: string } | null>(null);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
 
   // Computed Current User ID (for permissions/filtering if needed)
@@ -272,6 +272,7 @@ function AppContent() {
               onUpdate={updateAddress}
               onDelete={deleteAddress}
               partnerName={partnerProfile?.full_name || 'Partenaire'}
+              partnerId={partnerProfile?.id}
               userName={profile?.full_name || 'Moi'}
             />
           )}
