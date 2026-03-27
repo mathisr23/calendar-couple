@@ -39,12 +39,15 @@ function AppContent() {
     if (profile?.couple_id) {
       fetchCoupleData();
 
-      // Realtime subscription
+      // Realtime subscription — tables explicites pour éviter les ambiguïtés
+      const coupleFilter = `couple_id=eq.${profile.couple_id}`;
       const channel = supabase
         .channel('couple_changes')
-        .on('postgres_changes', { event: '*', schema: 'public', filter: `couple_id=eq.${profile.couple_id}` }, () => {
-          fetchCoupleData();
-        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'planned_dates', filter: coupleFilter }, () => { fetchCoupleData(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'bucket_list_items', filter: coupleFilter }, () => { fetchCoupleData(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'addresses', filter: coupleFilter }, () => { fetchCoupleData(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'activities', filter: coupleFilter }, () => { fetchCoupleData(); })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: coupleFilter }, () => { fetchCoupleData(); })
         .subscribe();
 
       return () => { supabase.removeChannel(channel); };
@@ -53,6 +56,7 @@ function AppContent() {
 
   const fetchCoupleData = async () => {
     if (!profile?.couple_id) return;
+    const userId = user?.id || '';
     try {
       // Parallel fetching
       const [datesRes, bucketRes, addressesRes, activitiesRes, profilesRes, coupleRes] = await Promise.all([
@@ -60,7 +64,7 @@ function AppContent() {
         supabase.from('bucket_list_items').select('*').eq('couple_id', profile.couple_id).order('created_at'),
         supabase.from('addresses').select('*').eq('couple_id', profile.couple_id),
         supabase.from('activities').select('*').eq('couple_id', profile.couple_id),
-        supabase.from('profiles').select('id, full_name').eq('couple_id', profile.couple_id).neq('id', currentUserId).single(),
+        supabase.from('profiles').select('id, full_name').eq('couple_id', profile.couple_id).neq('id', userId).limit(1),
         supabase.from('couples').select('invite_code').eq('id', profile.couple_id).single(),
       ]);
 
@@ -80,8 +84,8 @@ function AppContent() {
           authorId: a.author_id // Map snake_case to camelCase
         })));
       }
-      if (profilesRes.data) {
-        setPartnerProfile(profilesRes.data);
+      if (profilesRes.data && profilesRes.data.length > 0) {
+        setPartnerProfile(profilesRes.data[0]);
       } else {
         setPartnerProfile(null);
       }

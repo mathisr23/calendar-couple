@@ -177,46 +177,72 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
         }
 
         @media (max-width: 768px) {
-            .title-retro {
-                font-size: 2rem;
-            }
-            .content-card {
-                padding: 1.5rem;
-            }
+            .title-retro { font-size: 2rem; }
+            .content-card { padding: 0.75rem; }
+
+            /* Ligne 1 : [check] [nom] / Ligne 2 : [ratings inline] — tout compact */
             .address-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .ratings-section {
-                width: 100%;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1.5rem;
-            }
-            .place-info {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
+                flex-direction: row;
+                flex-wrap: wrap;
                 align-items: center;
+                gap: 0.4rem;
+                padding: 0.6rem 2.75rem 0.6rem 0.6rem; /* right = espace pour delete */
             }
             .check-btn {
-                order: -1; 
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+            }
+            .place-info {
+                flex: 1;
+                min-width: 0;
+                margin: 0;
+                padding-right: 0;
+            }
+            .place-name { font-size: 0.95rem; }
+
+            /* Force les ratings sur la 2e ligne */
+            .ratings-section {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.4rem 0.75rem;
+                margin-left: 0;
+            }
+            /* Label + cases côte à côte */
+            .user-rating {
+                flex-direction: row;
+                align-items: center;
+                gap: 0.3rem;
+                min-width: 0;
+                flex: 0 0 auto;
+            }
+            .user-label { font-size: 0.85rem; }
+
+            /* Cases plus petites */
+            .rate-box {
+                width: 18px !important;
+                height: 18px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .total-score {
+                min-width: 44px;
+                padding: 3px 5px;
             }
             .delete-btn {
-                position: absolute;
                 top: 0.5rem;
                 right: 0.5rem;
+                width: 28px;
+                height: 28px;
             }
-            .address-item {
-                position: relative;
-            }
-            .add-place-form {
-                flex-direction: column;
-            }
-            .add-btn {
-                width: 100%;
-            }
+            .add-place-form { flex-direction: column; }
+            .add-btn { width: 100%; }
+        }
+        @media (max-width: 400px) {
+            .content-card { padding: 0.5rem; }
+            .place-name { font-size: 0.85rem; }
         }
         .tabs-container {
           display: flex;
@@ -298,16 +324,20 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
         .address-item.completed .place-name {
           text-decoration: line-through;
         }
-        /* Check button container */
         .check-btn {
-            flex-shrink: 0;
-            margin-top: 4px; /* Align with text */
+          flex-shrink: 0;
+          width: 40px;
+          height: 40px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 2px 2px 0px var(--retro-dark);
         }
         .place-info {
-          /* Force wrap sooner: large basis */
-          flex: 1 1 400px; 
-          min-width: 300px; 
-          margin-top: 6px; 
+          flex: 1 1 200px;
+          min-width: 0;
+          margin-top: 2px;
           margin-right: 1rem;
         }
         .place-name {
@@ -315,7 +345,7 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
           font-weight: 700;
           font-size: 1.125rem;
           text-transform: uppercase;
-          word-break: break-word; 
+          word-break: break-word;
           line-height: 1.4;
         }
         .ratings-section {
@@ -323,16 +353,14 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
           align-items: flex-start;
           gap: 1.5rem;
           flex-shrink: 0;
-          margin-top: 2px;
-          /* If wrapped, ensure it has some top margin if needed, though gap handles most */
-          margin-left: auto; /* Push to right on large screens */
+          margin-left: auto;
         }
         .user-rating {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.5rem;
-          min-width: 150px; /* Increased from 140px fixed */
+          gap: 0.4rem;
+          min-width: 130px;
           flex-shrink: 0;
         }
         .user-label {
@@ -347,21 +375,21 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.25rem;
-          min-width: 70px; /* Increased from 60px */
+          gap: 0.15rem;
+          min-width: 56px;
           flex-shrink: 0;
-          padding: 4px;
+          padding: 4px 6px;
           border: 2px solid var(--retro-dark);
           border-radius: 4px;
           background: var(--retro-yellow);
         }
         .score-label {
-          font-size: 0.65rem;
+          font-size: 0.6rem;
           font-weight: 800;
+          letter-spacing: 0.05em;
         }
         .sum {
           font-family: var(--font-display);
-          font-weight: 400;
           font-size: 1.5rem;
           line-height: 1;
         }
@@ -372,19 +400,23 @@ export const Addresses: React.FC<AddressesProps> = ({ addresses, currentUser, on
         }
         .delete-btn {
           position: absolute;
-          top: 1rem;
-          right: 1rem;
+          top: 0.75rem;
+          right: 0.75rem;
           color: var(--text-muted);
-          width: 44px;
-          height: 44px;
+          width: 36px;
+          height: 36px;
           padding: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s;
+          transition: color 0.2s;
+          box-shadow: none;
         }
         .delete-btn:hover {
           color: var(--retro-pink);
+          background: none;
+          transform: none;
+          box-shadow: none;
         }
         .empty-msg {
           text-align: center;

@@ -1,5 +1,5 @@
-import React from 'react';
-import { LogOut, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { LogOut, Heart, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -8,6 +8,14 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
   const { signOut } = useAuth();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!inviteCode) return;
+    navigator.clipboard.writeText(inviteCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <header className="header-container">
@@ -23,10 +31,10 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
 
       <div className="header-actions">
         {inviteCode && (
-          <div className="retro-badge">
-            <span className="label">CODE:</span>
-            <code className="value" onClick={() => navigator.clipboard.writeText(inviteCode)}>
-              {inviteCode}
+          <div className={`retro-badge ${copied ? 'copied' : ''}`} onClick={handleCopy} title="Cliquer pour copier">
+            {copied ? <Check size={14} /> : <span className="label">CODE:</span>}
+            <code className="value">
+              {copied ? 'COPIÉ !' : inviteCode}
             </code>
           </div>
         )}
@@ -100,9 +108,15 @@ export const Header: React.FC<HeaderProps> = ({ inviteCode }) => {
             align-items: center;
         }
         
+        .retro-badge {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .retro-badge.copied {
+            background: var(--retro-green);
+        }
         .retro-badge .value {
             font-weight: 700;
-            cursor: pointer;
         }
 
         .logout-btn {
